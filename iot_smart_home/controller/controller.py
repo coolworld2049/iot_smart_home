@@ -43,7 +43,7 @@ async def list_sensors():
 async def read_device(device_name: str):
     if device_name in devices:
         return {"device": device_name, "status": devices[device_name]}
-    raise HTTPException(status_code=404, detail="Device not found")
+    raise HTTPException(status_code=404, detail="DeviceSimulatorSimulator not found")
 
 
 # Update device status
@@ -52,4 +52,4 @@ async def update_device(device_name: str, status: bool):
     if device_name in devices:
         devices[device_name] = status
         return {"device": device_name, "status": status}
-    raise HTTPException(status_code=404, detail="Device not found")
+    raise HTTPException(status_code=404, detail="DeviceSimulatorSimulator not found")

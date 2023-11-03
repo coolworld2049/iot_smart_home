@@ -1,30 +1,8 @@
 version: '3'
 services:
-  controller:
-    build:
-      context: iot_smart_home/controller
-      dockerfile: Dockerfile
-  gateway:
-    build:
-      context: iot_smart_home/gateway
-      dockerfile: Dockerfile
-  device1:
-    build:
-      context: iot_smart_home/device
-      dockerfile: Dockerfile
-  device2:
-    build:
-      context: iot_smart_home/device
-      dockerfile: Dockerfile
-  device3:
-    build:
-      context: iot_smart_home/device
-      dockerfile: Dockerfile
-  device4:
-    build:
-      context: iot_smart_home/device
-      dockerfile: Dockerfile
-  device5:
-    build:
-      context: iot_smart_home/device
-      dockerfile: Dockerfile
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"

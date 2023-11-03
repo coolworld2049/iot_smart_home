@@ -532,6 +532,16 @@ files = [
 ]
 
 [[package]]
+name = "uptime"
+version = "3.0.1"
+description = "Cross-platform uptime library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "uptime-3.0.1.tar.gz", hash = "sha256:7c300254775b807ce46e3dcbcda30aa3b9a204b9c57a7ac1e79ee6dbe3942973"},
+]
+
+[[package]]
 name = "win32-setctime"
 version = "1.1.0"
 description = "A small Python utility to set file creation time on Windows"
@@ -548,4 +558,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "773938b05aea006cbd67b3e459146726736dc2cd7ec4b56c989e76b8a5b590f5"
+content-hash = "d0e2e0d2448a0ebee103aa7a9687b6c26862ae0fb9f0acf8387181e6e576dc6a"

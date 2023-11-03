@@ -1,66 +1,69 @@
-import json
-import os
 from abc import ABCMeta, abstractmethod
 from random import gauss, seed, uniform
 
-import paho.mqtt.client as mqtt
-
-from iot_smart_home.device.schemas import MeasurementResponse, DeviceResponse
-
-
-class DataPublisher:
-    def publish(self, topic, data):
-        pass
+from iot_smart_home.device.schemas import Measurement, DeviceResponse, Node, NodeState
+from iot_smart_home.publisher.mqtt_publisher import DataPublisher
 
 
-class MqttDataPublisher(DataPublisher):
-    def __init__(self, broker_address, port):
-        self.client = mqtt.Client("SensorSimulator")
-        self.client.connect(broker_address, port)
-
-    def publish(self, topic, data):
-        payload = json.dumps(data)
-        self.client.publish(topic, payload)
-
-
-class DeviceBase(metaclass=ABCMeta):
-    def __init__(self, name, frequency=1, description=None):
-        self.name = name
-        self.host = os.name
-        self.description = description
-
-    @abstractmethod
-    def make_measurement(self):
-        raise NotImplementedError
-
-
-class Device(DeviceBase):
+class DeviceSimulator(metaclass=ABCMeta):
     def __init__(
         self,
-        name,
-        description,
+        name: str,
+        description: str = None,
+        frequency: int = 1,
+        *,
         data_publisher: DataPublisher,
-        measurement_type_include: set[str] = None,
-        measurement_type_exclude: set[str] = None,
     ):
-        super().__init__(name, description)
         self.name = name
         self.description = description
         self.data_publisher = data_publisher
-        self.measurement_type_include = measurement_type_include
-        self.measurement_type_exclude = measurement_type_exclude
+        self._node = Node(state=NodeState.on)
         seed()
 
-    def make_measurement(self):
-        _ms = MeasurementResponse(
-            temperature=round(22 + gauss(0, 3), 2),
-            pressure=round(101.3 + gauss(0, 5), 2),
-            relative_humidity=round(0.35 + uniform(-0.075, 0.075), 2),
+    @abstractmethod
+    def measure(self):
+        pass
+
+
+class RandomDataGenerator:
+    @staticmethod
+    def generate_measurement():
+        temperature = round(22 + gauss(0, 3), 2)
+        pressure = round(101.3 + gauss(0, 5), 2)
+        relative_humidity = round(0.35 + uniform(-0.075, 0.075), 2)
+        return Measurement(
+            temperature=temperature,
+            pressure=pressure,
+            relative_humidity=relative_humidity,
         )
-        ms = MeasurementResponse(**_ms.model_dump(
-            include=self.measurement_type_include,
-            exclude=self.measurement_type_exclude,
-        ))
-        resp = DeviceResponse(measurement=ms)
-        self.data_publisher.publish(self.name, resp.model_dump())
-        return resp
+
+
+class DeviceSimulatorImpl(DeviceSimulator):
+    def __init__(
+        self,
+        name: str,
+        description: str = None,
+        frequency: int = 1,
+        *,
+        data_publisher: DataPublisher,
+        measurement_field_include: set[str] = None,
+        measurement_field_exclude: set[str] = None,
+    ):
+        super().__init__(name, description, frequency, data_publisher=data_publisher)
+        self.measurement_field_include = measurement_field_include
+        self.measurement_field_exclude = measurement_field_exclude
+
+    def filter_measurement_fields(self, measurement):
+        return Measurement(
+            **measurement.model_dump(
+                include=self.measurement_field_include,
+                exclude=self.measurement_field_exclude,
+            )
+        )
+
+    def measure(self):
+        measurement = RandomDataGenerator.generate_measurement()
+        filtered_measurement = self.filter_measurement_fields(measurement)
+        response = DeviceResponse(node=self._node, measurement=filtered_measurement)
+        self.data_publisher.publish(self.name, response.model_dump())
+        return response
