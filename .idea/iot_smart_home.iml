@@ -10,10 +10,9 @@
   <component name="PyNamespacePackagesService">
     <option name="namespacePackageFolders">
       <list>
-        <option value="$MODULE_DIR$/iot_smart_home/controller" />
-        <option value="$MODULE_DIR$/iot_smart_home/device" />
-        <option value="$MODULE_DIR$/iot_smart_home/gateway" />
-        <option value="$MODULE_DIR$/iot_smart_home" />
+        <option value="$MODULE_DIR$/controller" />
+        <option value="$MODULE_DIR$/device" />
+        <option value="$MODULE_DIR$/gateway" />
       </list>
     </option>
   </component>

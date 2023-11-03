@@ -1,0 +1,11 @@
+services:
+  light:
+    - name: лампочка ильича
+      endpoint_on: http://simple_light/on
+      endpoint_off: http://simple_light/off
+    - name: ярило
+      endpoint_on: http://simple_light2/on
+      endpoint_off: http://simple_light2/off
+    - name: адская баня
+      endpoint_on: http://simple_light3/on
+      endpoint_off: http://simple_light3/off

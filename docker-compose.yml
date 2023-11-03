@@ -1,23 +1,97 @@
 version: '3.9'
 
 services:
-  homeassistant:
-    image: linuxserver/homeassistant:latest
-    container_name: homeassistant
+  emqx1:
+    image: emqx:5.1.6
+    container_name: emqx1
     environment:
-      - PUID=1000
-      - PGID=1000
+    - EMQX_NODE_NAME=emqx@node1.emqx.io
+    - EMQX_CLUSTER__DISCOVERY_STRATEGY=static
+    - EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      default:
+        aliases:
+          - node1.emqx.io
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "8084:8084"
+      - "8883:8883"
+      - "18083:18083"
+    volumes:
+      - emqx1_data:/opt/emqx/data
+  emqx2:
+    image: emqx:5.1.6
+    container_name: emqx2
+    environment:
+    - EMQX_NODE_NAME=emqx@node2.emqx.io
+    - EMQX_CLUSTER__DISCOVERY_STRATEGY=static
+    - EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      default:
+        aliases:
+          - node2.emqx.io
+    volumes:
+      - emqx2_data:/opt/emqx/data
+    depends_on:
+      emqx1:
+        condition: service_healthy
+
+
+  sensor-climate:
+    build: .
+    hostname: sensor-climate
+    command: python -m device.sensors.climate
+    env_file:
+      - .env
+    environment:
+      DEVICE_MQTT_BROKER_HOST: emqx1
+      DEVICE_NAME: sensor-climate
+    restart: always
+  sensor-lamp:
+    build: .
+    hostname: sensor-lamp
+    command: python -m device.sensors.lamp
+    env_file:
+      - .env
+    environment:
+      DEVICE_MQTT_BROKER_HOST: emqx1
+      DEVICE_NAME: sensor-lamp
+    restart: always
+  sensor-motion:
+    build: .
+    hostname: sensor-motion
+    command: python -m device.sensors.motion
+    env_file:
+      - .env
+    environment:
+      DEVICE_MQTT_BROKER_HOST: emqx1
+      DEVICE_NAME: sensor-motion
+    restart: always
+
+
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    environment:
       - TZ=Europe/Moscow
     volumes:
-      - $PWD/homeassistant_data:/config
+      - ./homeassistant/custom_components:/config/custom_components
+      - /etc/localtime:/etc/localtime:ro
+    privileged: true
     ports:
       - "8123:8123"
-    restart: unless-stopped
-    networks:
-      - default
-      - iot_smart_home_emqx-bridge
-networks:
-  iot_smart_home_emqx-bridge:
-    external: true
-  default:
-    driver: bridge
+volumes:
+  emqx1_data:
+  emqx2_data:

@@ -2,12 +2,12 @@ import random
 
 from pydantic import BaseModel, Field
 
-from device.schemas import DeviceResponse
+from device.schemas import DeviceModel, DeviceState
 from device.settings import settings
-from device.simulator.base import DeviceSimulator
+from device.sensors.base import SimulatorBase
 
 
-class Attributes(BaseModel):
+class ClimateSensorSimulatorResponse(BaseModel):
     temperature_celsius: float = Field(
         default_factory=lambda: round(random.uniform(10.0, 35.0), 1)
     )
@@ -23,28 +23,22 @@ class Attributes(BaseModel):
     )
 
 
-class SensorResponse(DeviceResponse):
-    attributes: Attributes
-
-
-class ClimateSensorSimulator(DeviceSimulator):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class ClimateSensorSimulator(SimulatorBase):
+    def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
+        super().__init__(mqtt_broker_host, mqtt_broker_port, mqtt_topic, state)
 
     def measure(self):
-        response = SensorResponse(
-            node=self._node,
-            attributes=Attributes(),
+        payload = DeviceModel(
+            attributes=ClimateSensorSimulatorResponse(), state=self.state
         )
-        self.publish(response)
-        return response
+        return payload.model_dump_json()
 
 
 climate = ClimateSensorSimulator(
-    topic=settings.mqtt_topic,
-    description=settings.description,
-    frequency=settings.frequency,
-    data_publisher=settings.mqtt_data_publisher,
+    mqtt_broker_host=settings.mqtt_broker_host,
+    mqtt_broker_port=settings.mqtt_broker_port,
+    mqtt_topic=settings.mqtt_topic,
+    state=DeviceState.on,
 )
 
 if __name__ == "__main__":
