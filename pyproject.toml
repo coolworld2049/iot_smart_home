@@ -4,11 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["coolworld2049 <coolworld2049@gmail.com>"]
 readme = "README.md"
-packages = [{include = "iot_smart_home"}]
+packages = []
 
 [tool.poetry.dependencies]
 python = "^3.11"
-cryptography = "^41.0.5"
 paho-mqtt = "^1.6.1"
 pydantic = "^2.4.2"
 pydantic-settings = "^2.0.3"

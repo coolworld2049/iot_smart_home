@@ -2,9 +2,9 @@ import random
 
 from pydantic import BaseModel, Field
 
-from iot_smart_home.device.schemas import DeviceResponse
-from iot_smart_home.device.settings import settings
-from iot_smart_home.device.simulator.base import DeviceSimulator
+from device.schemas import DeviceResponse
+from device.settings import settings
+from device.simulator.base import DeviceSimulator
 
 
 class Attributes(BaseModel):
@@ -38,7 +38,6 @@ class MotionSensorSimulator(DeviceSimulator):
         response = SensorResponse(
             node=self._node,
             attributes=Attributes(),
-            physical_device=MotionSensorSimulator(name=MotionSensorSimulator.__name__),
         )
         self.publish(response)
         return response
@@ -50,3 +49,6 @@ motion = MotionSensorSimulator(
     frequency=settings.frequency,
     data_publisher=settings.mqtt_data_publisher,
 )
+
+if __name__ == "__main__":
+    motion.run()

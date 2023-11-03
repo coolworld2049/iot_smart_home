@@ -2,9 +2,9 @@ import random
 
 from pydantic import BaseModel, Field
 
-from iot_smart_home.device.schemas import DeviceResponse
-from iot_smart_home.device.settings import settings
-from iot_smart_home.device.simulator.base import DeviceSimulator
+from device.schemas import DeviceResponse
+from device.settings import settings
+from device.simulator.base import DeviceSimulator
 
 
 class Attributes(BaseModel):
@@ -46,3 +46,6 @@ climate = ClimateSensorSimulator(
     frequency=settings.frequency,
     data_publisher=settings.mqtt_data_publisher,
 )
+
+if __name__ == "__main__":
+    climate.run()

@@ -15,9 +15,9 @@ services:
     restart: unless-stopped
     networks:
       - default
-      - emqx-bridge
+      - iot_smart_home_emqx-bridge
 networks:
-  emqx-bridge:
+  iot_smart_home_emqx-bridge:
     external: true
   default:
     driver: bridge

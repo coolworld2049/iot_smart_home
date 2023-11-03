@@ -5,8 +5,8 @@ from random import seed
 
 from loguru import logger
 
-from iot_smart_home.device.data_publisher.base import DataPublisher
-from iot_smart_home.device.schemas import Node, DeviceResponse, PhysicalDevice
+from device.data_publisher.base import DataPublisher
+from device.schemas import Node, DeviceResponse, PhysicalDevice
 
 
 class DeviceSimulator(metaclass=ABCMeta):

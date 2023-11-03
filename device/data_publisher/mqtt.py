@@ -3,7 +3,7 @@ import json
 from loguru import logger
 from paho.mqtt import client as mqtt
 
-from iot_smart_home.device.data_publisher.base import DataPublisher
+from device.data_publisher.base import DataPublisher
 
 
 class MqttDataPublisher(DataPublisher):
