@@ -1,8 +1,23 @@
-version: '3'
+version: '3.9'
+
 services:
-  mqtt-broker:
-    image: eclipse-mosquitto:latest
-    container_name: mqtt-broker
+  homeassistant:
+    image: linuxserver/homeassistant:latest
+    container_name: homeassistant
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+    volumes:
+      - $PWD/homeassistant_data:/config
     ports:
-      - "1883:1883"
-      - "9001:9001"
+      - "8123:8123"
+    restart: unless-stopped
+    networks:
+      - default
+      - emqx-bridge
+networks:
+  emqx-bridge:
+    external: true
+  default:
+    driver: bridge
