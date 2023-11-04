@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from device.schemas import DeviceModel, DeviceState
 from device.settings import settings
-from device.sensors.base import SimulatorBase
+from device.sensors.abc import SensorBase
 
 
 class ClimateSensorSimulatorResponse(BaseModel):
@@ -23,7 +23,7 @@ class ClimateSensorSimulatorResponse(BaseModel):
     )
 
 
-class ClimateSensorSimulator(SimulatorBase):
+class ClimateSensor(SensorBase):
     def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
         super().__init__(mqtt_broker_host, mqtt_broker_port, mqtt_topic, state)
 
@@ -34,7 +34,7 @@ class ClimateSensorSimulator(SimulatorBase):
         return payload.model_dump_json()
 
 
-climate = ClimateSensorSimulator(
+climate = ClimateSensor(
     mqtt_broker_host=settings.mqtt_broker_host,
     mqtt_broker_port=settings.mqtt_broker_port,
     mqtt_topic=settings.mqtt_topic,

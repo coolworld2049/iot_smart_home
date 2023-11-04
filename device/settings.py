@@ -14,7 +14,6 @@ class MqttSettings(BaseSettings):
 
 
 class Settings(MqttSettings):
-    name: str
     placement: str | None = None
     pub_frequency: float = 1
 

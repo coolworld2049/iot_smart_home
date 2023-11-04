@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from device.schemas import DeviceModel, DeviceState
 from device.settings import settings
-from device.sensors.base import SimulatorBase
+from device.sensors.abc import SensorBase
 
 
 class LampSensorSimulatorResponse(BaseModel):
@@ -19,7 +19,7 @@ class LampSensorSimulatorResponse(BaseModel):
     )
 
 
-class LampSensorSimulator(SimulatorBase):
+class LampSensor(SensorBase):
     def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
         super().__init__(mqtt_broker_host, mqtt_broker_port, mqtt_topic, state)
 
@@ -30,7 +30,7 @@ class LampSensorSimulator(SimulatorBase):
         return payload.model_dump_json()
 
 
-lamp = LampSensorSimulator(
+lamp = LampSensor(
     mqtt_broker_host=settings.mqtt_broker_host,
     mqtt_broker_port=settings.mqtt_broker_port,
     mqtt_topic=settings.mqtt_topic,

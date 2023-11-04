@@ -1,11 +1,131 @@
-services:
-  light:
-    - name: лампочка ильича
-      endpoint_on: http://simple_light/on
-      endpoint_off: http://simple_light/off
-    - name: ярило
-      endpoint_on: http://simple_light2/on
-      endpoint_off: http://simple_light2/off
-    - name: адская баня
-      endpoint_on: http://simple_light3/on
-      endpoint_off: http://simple_light3/off
+default_config:
+###
+mqtt:
+  - sensor:
+      state_topic: "sensor/climate"
+      name: "Climate Temperature"
+      unit_of_measurement: "°C"
+      value_template: "{{ value_json.attributes.temperature_celsius }}"
+      unique_id: "climate_temperature"
+      icon: mdi:thermometer
+  - sensor:
+      state_topic: "sensor/climate"
+      name: "Climate Humidity"
+      unit_of_measurement: "%"
+      value_template: "{{ value_json.attributes.humidity_percent }}"
+      unique_id: "climate_humidity"
+      icon: mdi:water-percent
+  - sensor:
+      state_topic: "sensor/climate"
+      name: "Climate Air Quality"
+      value_template: "{{ value_json.attributes.air_quality }}"
+      unique_id: "climate_air_quality"
+      icon: mdi:air-filter
+  - sensor:
+      state_topic: "sensor/climate"
+      name: "Climate CO2 Level"
+      unit_of_measurement: "ppm"
+      value_template: "{{ value_json.attributes.carbon_dioxide_ppm }}"
+      unique_id: "climate_co2_level"
+      icon: mdi:chemical-weapon
+  - sensor:
+      state_topic: "sensor/climate"
+      name: "Climate Air Pressure"
+      unit_of_measurement: "hPa"
+      value_template: "{{ value_json.attributes.air_pressure_hpa }}"
+      unique_id: "climate_air_pressure"
+      icon: mdi:gauge
+  - switch:
+      name: "Climate Sensor Switch"
+      state_topic: "sensor/climate/state"
+      command_topic: "sensor/climate/state"
+      payload_on: "on"
+      payload_off: "off"
+      state_on: "on"
+      state_off: "off"
+  - sensor: ### Smart Lamp
+      state_topic: "sensor/lamp"
+      name: "Lamp Is On"
+      value_template: "{{ value_json.attributes.is_on }}"
+      unique_id: "lamp_is_on"
+      icon: mdi:lightbulb-on
+  - sensor:
+      state_topic: "sensor/lamp"
+      name: "Lamp Brightness"
+      unit_of_measurement: "%"
+      value_template: "{{ value_json.attributes.brightness }}"
+      unique_id: "lamp_brightness"
+      icon: mdi:brightness-percent
+  - sensor:
+      state_topic: "sensor/lamp"
+      name: "Lamp Color Temperature"
+      unit_of_measurement: "K"
+      value_template: "{{ value_json.attributes.color_temperature }}"
+      unique_id: "lamp_color_temperature"
+      icon: mdi:white-balance-sunny
+  - sensor:
+      state_topic: "sensor/lamp"
+      name: "Lamp Color"
+      value_template: "{{ value_json.attributes.color }}"
+      unique_id: "lamp_color"
+      icon: mdi:palette
+  - sensor:
+      state_topic: "sensor/lamp"
+      name: "Lamp Mode"
+      value_template: "{{ value_json.attributes.mode }}"
+      unique_id: "lamp_mode"
+      icon: mdi:puzzle
+  - switch:
+      name: "Smart Lamp Switch"
+      state_topic: "sensor/lamp/state"
+      command_topic: "sensor/lamp/state"
+      payload_on: "on"
+      payload_off: "off"
+      state_on: "on"
+      state_off: "off"
+  - sensor:   ### Motion Sensor
+      state_topic: "sensor/motion"
+      name: "Motion Detected"
+      unique_id: "motion_detected"
+      icon: mdi:motion-sensor
+  - sensor:
+      state_topic: "sensor/motion"
+      name: "Light Intensity"
+      unit_of_measurement: "lux"
+      value_template: "{{ value_json.attributes.light_intensity_lux }}"
+      unique_id: "light_intensity"
+      icon: mdi:brightness-5
+  - sensor:
+      state_topic: "sensor/motion"
+      name: "Zone Size"
+      value_template: "{{ value_json.attributes.zone_size }}"
+      unique_id: "zone_size"
+      icon: mdi:map-marker-radius
+  - sensor:
+      state_topic: "sensor/motion"
+      name: "Zone Shape"
+      value_template: "{{ value_json.attributes.zone_shape }}"
+      unique_id: "zone_shape"
+      icon: mdi:shape
+  - sensor:
+      state_topic: "sensor/motion"
+      name: "Detection Distance"
+      unit_of_measurement: "m"
+      value_template: "{{ value_json.attributes.detection_distance }}"
+      unique_id: "detection_distance"
+      icon: mdi:ruler
+  - sensor:
+      state_topic: "sensor/motion"
+      name: "Detection Angle"
+      unit_of_measurement: "°"
+      value_template: "{{ value_json.attributes.detection_angle }}"
+      unique_id: "detection_angle"
+      icon: mdi:compass
+  - switch:
+      name: "Smart Motion Detection Switch"
+      state_topic: "sensor/motion/state"
+      command_topic: "sensor/motion/state"
+      payload_on: "on"
+      payload_off: "off"
+      state_on: "on"
+      state_off: "off"

@@ -46,8 +46,6 @@ services:
     depends_on:
       emqx1:
         condition: service_healthy
-
-
   sensor-climate:
     build: .
     hostname: sensor-climate
@@ -55,8 +53,10 @@ services:
     env_file:
       - .env
     environment:
+      DEVICE_PLACEMENT: bedroom
       DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_NAME: sensor-climate
+      DEVICE_MQTT_BROKER_PORT: 1883
+      DEVICE_MQTT_TOPIC: sensor/climate
     restart: always
   sensor-lamp:
     build: .
@@ -65,8 +65,10 @@ services:
     env_file:
       - .env
     environment:
+      DEVICE_PLACEMENT: bedroom
       DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_NAME: sensor-lamp
+      DEVICE_MQTT_BROKER_PORT: 1883
+      DEVICE_MQTT_TOPIC: sensor/lamp
     restart: always
   sensor-motion:
     build: .
@@ -75,11 +77,11 @@ services:
     env_file:
       - .env
     environment:
+      DEVICE_PLACEMENT: bedroom
       DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_NAME: sensor-motion
+      DEVICE_MQTT_BROKER_PORT: 1883
+      DEVICE_MQTT_TOPIC: sensor/motion
     restart: always
-
-
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
@@ -87,11 +89,13 @@ services:
     environment:
       - TZ=Europe/Moscow
     volumes:
-      - ./homeassistant/custom_components:/config/custom_components
+      - ./homeassistant/config:/config
       - /etc/localtime:/etc/localtime:ro
     privileged: true
     ports:
       - "8123:8123"
+    depends_on:
+      - emqx2
 volumes:
   emqx1_data:
   emqx2_data:

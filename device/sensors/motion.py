@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from device.schemas import DeviceModel, DeviceState
 from device.settings import settings
-from device.sensors.base import SimulatorBase
+from device.sensors.abc import SensorBase
 
 
 class MotionSensorSimulatorResponse(BaseModel):
@@ -26,7 +26,7 @@ class MotionSensorSimulatorResponse(BaseModel):
     )
 
 
-class MotionSensorSimulator(SimulatorBase):
+class MotionSensor(SensorBase):
     def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
         super().__init__(mqtt_broker_host, mqtt_broker_port, mqtt_topic, state)
 
@@ -37,7 +37,7 @@ class MotionSensorSimulator(SimulatorBase):
         return payload.model_dump_json()
 
 
-motion = MotionSensorSimulator(
+motion = MotionSensor(
     mqtt_broker_host=settings.mqtt_broker_host,
     mqtt_broker_port=settings.mqtt_broker_port,
     mqtt_topic=settings.mqtt_topic,

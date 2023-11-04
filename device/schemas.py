@@ -9,20 +9,15 @@ from uptime import uptime
 from device.settings import settings
 
 
-class PhysicalDevice(BaseModel):
-    name: str
-
-
 class DeviceState(str, Enum):
-    on: str = "ON"
-    off: str = "OFF"
+    on: str = "on"
+    off: str = "off"
 
 
 class DeviceModel(BaseModel):
-    node: str = platform.node()
-    name: str = settings.name
-    placement: str | None = settings.placement
-    state: DeviceState | str | None = None
-    uptime: float | None = Field(default_factory=lambda: uptime())
+    name: str = platform.node()
+    placement: str = settings.placement
+    uptime: float = Field(default_factory=lambda: uptime())
     last_changed: str = Field(default_factory=lambda: datetime.utcnow().__str__())
-    attributes: Any
+    state: DeviceState | int | None = None
+    attributes: Any | None = None
