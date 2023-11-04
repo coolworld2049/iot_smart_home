@@ -2,12 +2,12 @@ import random
 
 from pydantic import BaseModel, Field
 
-from device.schemas import DeviceModel, DeviceState
-from device.settings import settings
-from device.sensors.abc import SensorBase
+from iot_smart_home.devices.base import MqttSensorBase
+from iot_smart_home.schemas import DeviceState
+from iot_smart_home.settings import settings
 
 
-class MotionSensorSimulatorResponse(BaseModel):
+class MotionSensorResponse(BaseModel):
     motion_detected: bool = Field(default_factory=lambda: random.choice([True, False]))
     light_intensity_lux: float = Field(
         default_factory=lambda: random.uniform(0.0, 1000.0)
@@ -26,15 +26,20 @@ class MotionSensorSimulatorResponse(BaseModel):
     )
 
 
-class MotionSensor(SensorBase):
+class MotionSensor(MqttSensorBase):
     def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
-        super().__init__(mqtt_broker_host, mqtt_broker_port, mqtt_topic, state)
+        super().__init__(
+            mqtt_broker_host,
+            mqtt_broker_port,
+            mqtt_topic,
+            state,
+            pub_frequency=settings.pub_frequency,
+            discovery_topic=settings.discovery_topic,
+        )
 
     def measure(self):
-        payload = DeviceModel(
-            attributes=MotionSensorSimulatorResponse(), state=self.state
-        )
-        return payload.model_dump_json()
+        self.device.attributes = MotionSensorResponse()
+        return self.device.model_dump_json()
 
 
 motion = MotionSensor(

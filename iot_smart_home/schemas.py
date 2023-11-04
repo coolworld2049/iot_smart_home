@@ -6,18 +6,16 @@ from typing import Any
 from pydantic import BaseModel, Field
 from uptime import uptime
 
-from device.settings import settings
-
 
 class DeviceState(str, Enum):
     on: str = "on"
     off: str = "off"
 
 
-class DeviceModel(BaseModel):
+class Device(BaseModel):
     name: str = platform.node()
-    placement: str = settings.placement
+    topic: str
     uptime: float = Field(default_factory=lambda: uptime())
     last_changed: str = Field(default_factory=lambda: datetime.utcnow().__str__())
-    state: DeviceState | int | None = None
+    state: DeviceState | None = None
     attributes: Any | None = None

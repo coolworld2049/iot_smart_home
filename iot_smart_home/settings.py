@@ -13,6 +13,7 @@ class MqttSettings(BaseSettings):
 class Settings(MqttSettings):
     placement: str | None = None
     pub_frequency: float = 1
+    discovery_topic: str = "discovery"
 
     model_config = SettingsConfigDict(
         env_prefix="DEVICE_",

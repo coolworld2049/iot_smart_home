@@ -46,40 +46,40 @@ services:
     depends_on:
       emqx1:
         condition: service_healthy
+  gateway:
+    build: .
+    hostname: gateway
+    command: python -m iot_smart_home.devices.gateway
+    env_file:
+      - .env.prod
+    environment:
+      DEVICE_MQTT_TOPIC: gateway
+    restart: always
   sensor-climate:
     build: .
     hostname: sensor-climate
-    command: python -m device.sensors.climate
+    command: python -m iot_smart_home.devices.sensors.climate
     env_file:
-      - .env
+      - .env.prod
     environment:
-      DEVICE_PLACEMENT: bedroom
-      DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_MQTT_BROKER_PORT: 1883
       DEVICE_MQTT_TOPIC: sensor/climate
     restart: always
   sensor-lamp:
     build: .
     hostname: sensor-lamp
-    command: python -m device.sensors.lamp
+    command: python -m iot_smart_home.devices.sensors.lamp
     env_file:
-      - .env
+      - .env.prod
     environment:
-      DEVICE_PLACEMENT: bedroom
-      DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_MQTT_BROKER_PORT: 1883
       DEVICE_MQTT_TOPIC: sensor/lamp
     restart: always
   sensor-motion:
     build: .
     hostname: sensor-motion
-    command: python -m device.sensors.motion
+    command: python -m iot_smart_home.devices.sensors.motion
     env_file:
-      - .env
+      - .env.prod
     environment:
-      DEVICE_PLACEMENT: bedroom
-      DEVICE_MQTT_BROKER_HOST: emqx1
-      DEVICE_MQTT_BROKER_PORT: 1883
       DEVICE_MQTT_TOPIC: sensor/motion
     restart: always
   homeassistant:
