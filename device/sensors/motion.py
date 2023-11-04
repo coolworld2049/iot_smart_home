@@ -19,10 +19,10 @@ class MotionSensorSimulatorResponse(BaseModel):
         default_factory=lambda: random.choice(["Square", "Rectangle", "Triangle"])
     )
     detection_distance: str = Field(
-        default_factory=lambda: f"{random.choice(list(range(1, 5)))} meters"
+        default_factory=lambda: random.choice(list(range(1, 5)))
     )
     detection_angle: str = Field(
-        default_factory=lambda: f"{random.choice(list(range(60, 120)))} degrees"
+        default_factory=lambda: random.choice(list(range(60, 120)))
     )
 
 

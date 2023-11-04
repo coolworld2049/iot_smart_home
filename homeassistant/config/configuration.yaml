@@ -1,6 +1,7 @@
 default_config:
 ###
 mqtt:
+  ### Climate Sensor
   - sensor:
       state_topic: "sensor/climate"
       name: "Climate Temperature"
@@ -36,14 +37,16 @@ mqtt:
       unique_id: "climate_air_pressure"
       icon: mdi:gauge
   - switch:
-      name: "Climate Sensor Switch"
+      name: "Climate Sensor"
       state_topic: "sensor/climate/state"
       command_topic: "sensor/climate/state"
       payload_on: "on"
       payload_off: "off"
       state_on: "on"
       state_off: "off"
-  - sensor: ### Smart Lamp
+
+  ### Smart Lamp
+  - sensor:
       state_topic: "sensor/lamp"
       name: "Lamp Is On"
       value_template: "{{ value_json.attributes.is_on }}"
@@ -76,23 +79,26 @@ mqtt:
       unique_id: "lamp_mode"
       icon: mdi:puzzle
   - switch:
-      name: "Smart Lamp Switch"
+      name: "Smart Lamp"
       state_topic: "sensor/lamp/state"
       command_topic: "sensor/lamp/state"
       payload_on: "on"
       payload_off: "off"
       state_on: "on"
       state_off: "off"
-  - sensor:   ### Motion Sensor
+
+  ### Motion Sensor
+  - sensor:
       state_topic: "sensor/motion"
       name: "Motion Detected"
+      value_template: "{{ value_json.attributes.motion_detected }}"
       unique_id: "motion_detected"
       icon: mdi:motion-sensor
   - sensor:
       state_topic: "sensor/motion"
       name: "Light Intensity"
       unit_of_measurement: "lux"
-      value_template: "{{ value_json.attributes.light_intensity_lux }}"
+      value_template: "{{ value_json.attributes.light_intensity_lux | round(1) }}"
       unique_id: "light_intensity"
       icon: mdi:brightness-5
   - sensor:
@@ -122,7 +128,7 @@ mqtt:
       unique_id: "detection_angle"
       icon: mdi:compass
   - switch:
-      name: "Smart Motion Detection Switch"
+      name: "Motion Detector"
       state_topic: "sensor/motion/state"
       command_topic: "sensor/motion/state"
       payload_on: "on"
