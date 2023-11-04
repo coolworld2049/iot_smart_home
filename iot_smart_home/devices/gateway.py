@@ -10,11 +10,6 @@ from iot_smart_home.schemas import Device
 from iot_smart_home.settings import settings
 
 
-class DiscoveredDevice(BaseModel):
-    topic: str
-    device: Device | None = None
-
-
 class MqttGateway(MqttDeviceBase):
     def __init__(
         self,
