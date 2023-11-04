@@ -44,7 +44,7 @@ class MqttGateway(MqttDeviceBase):
         if msg.topic == f"{self.discovery_topic}/set":
             self.devices[device.name] = device
         if msg.topic == device.topic:
-            client.publish(msg.topic, msg.payload, msg.qos, msg.retain)
+            client.publish(device.topic, msg.payload, msg.qos, msg.retain)
 
     def updater(self, client: Client):
         while True:
