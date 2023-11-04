@@ -1,3 +1,7 @@
+import sys
+
+from loguru import logger
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -11,9 +15,9 @@ class MqttSettings(BaseSettings):
 
 
 class Settings(MqttSettings):
-    placement: str | None = None
     pub_frequency: float = 1
     gateway_topic: str = "gateway"
+    log_level: str = "INFO"
 
     model_config = SettingsConfigDict(
         env_prefix="IOT_SMART_HOME_",
@@ -22,3 +26,5 @@ class Settings(MqttSettings):
 
 
 settings = Settings()
+logger.remove()
+logger.add(sys.stdout, level=settings.log_level)

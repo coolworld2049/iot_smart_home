@@ -24,14 +24,13 @@ class ClimateSensorResponse(BaseModel):
 
 
 class ClimateSensor(MqttSensorBase):
-    def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic, state):
+    def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic):
         super().__init__(
             mqtt_broker_host,
             mqtt_broker_port,
             mqtt_topic,
-            state,
-            pub_frequency=settings.pub_frequency,
             gateway_topic=settings.gateway_topic,
+            pub_frequency=settings.pub_frequency,
         )
 
     def measure(self):
@@ -43,7 +42,6 @@ climate = ClimateSensor(
     mqtt_broker_host=settings.mqtt_broker_host,
     mqtt_broker_port=settings.mqtt_broker_port,
     mqtt_topic=settings.mqtt_topic,
-    state=DeviceState.on,
 )
 
 if __name__ == "__main__":
