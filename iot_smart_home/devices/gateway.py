@@ -29,16 +29,22 @@ class MqttGateway(MqttDeviceBase):
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
         client.subscribe(f"{self.mqtt_topic}/set")
+        client.subscribe(f"{self.mqtt_topic}/delete")
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
-        logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
+        logger.debug(f"Received from topic '{msg.topic}' message {msg.payload}")
         if not msg.payload:
             raise ValueError(msg)
         device = Device(**json.loads(msg.payload.decode()))
         if msg.topic == f"{self.mqtt_topic}/set":
             self.devices[device.name] = device
             logger.info(f"Added device '{device.name}'")
+        if msg.topic == f"{self.mqtt_topic}/delete":
+            if self.devices.get(device.name):
+                del self.devices[device.name]
+                logger.info(f"Removed device '{device.name}'")
         if msg.topic == device.topic:
+            logger.debug(f"Redirect to topic {device.topic}")
             client.publish(device.topic, msg.payload, msg.qos, msg.retain)
 
     def updater(self, client: Client):

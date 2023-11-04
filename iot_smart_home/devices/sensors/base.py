@@ -30,24 +30,25 @@ class MqttSensorBase(MqttDeviceBase, ABC):
     def measure(self) -> str:
         pass
 
-    def advertise_to_gateway(self, client: Client):
-        set_topic = f"{self.gateway_topic}/set"
-        logger.info(f"Advertise to gateway by topic {set_topic}")
-        client.publish(set_topic, self.device.model_dump_json(), qos=1)
+    def publish_to_gateway(self, client: Client, subtopic: str = "set"):
+        set_topic = f"{self.gateway_topic}/{subtopic}"
+        logger.debug(f"Pub to gateway by topic {set_topic}")
+        client.publish(set_topic, self.device.model_dump_json(), retain=True)
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
         logger.info(f"Connected to {client} with result code {str(rc)}")
         client.subscribe(self.state_topic)
         client.subscribe(self.gateway_topic)
         logger.info(f"Sub to topic {self.state_topic}, {self.gateway_topic}")
-        self.advertise_to_gateway(client)
+        self.publish_to_gateway(client)
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
-        logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
+        logger.debug(f"Received from topic '{msg.topic}' message {msg.payload}")
         if msg.payload and msg.topic == f"{self.mqtt_topic}/state":
             self.change_state(client, msg)
+            self.publish(client, self.device.model_dump_json())
         if msg.payload and msg.topic == self.gateway_topic:
-            client.publish(self.gateway_topic, self.device.model_dump_json())
+            self.publish_to_gateway(client)
 
     def updater(self, client: Client):
         while True:
@@ -57,8 +58,10 @@ class MqttSensorBase(MqttDeviceBase, ABC):
     def change_state(self, client: Client, msg: MQTTMessage):
         self.device.state = msg.payload.decode()
         logger.info(f"Received state change {self.device.state}")
-        self.publish(client, self.device.model_dump_json())
-        self.advertise_to_gateway(client)
+        if self.device.state == DeviceState.on:
+            self.publish_to_gateway(client)
+        elif self.device.state == DeviceState.off:
+            self.publish_to_gateway(client, subtopic="delete")
 
     def publish(self, client: Client, json_payload: str):
         if self.device.state == DeviceState.on:
