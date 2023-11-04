@@ -83,7 +83,7 @@ class MqttSensorBase(MqttDeviceBase, ABC):
     def advertise_to_gateway(self, client: Client):
         set_topic = f"{self.discovery_topic}/set"
         logger.info(f"Advertise to gateway by topic {set_topic}")
-        client.publish(set_topic, self.device.model_dump_json(), qos=1, retain=True)
+        client.publish(set_topic, self.device.model_dump_json(), qos=1)
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
         logger.info(f"Connected to {client} with result code {str(rc)}")
@@ -112,7 +112,7 @@ class MqttSensorBase(MqttDeviceBase, ABC):
 
     def publish(self, client: Client, json_payload: str):
         if self.device.state == DeviceState.on:
-            client.publish(self.mqtt_topic, json_payload, retain=True)
+            client.publish(self.mqtt_topic, json_payload)
             logger.info(f"Pub to topic '{self.mqtt_topic}' payload {json_payload}")
         else:
             logger.info(self.device.state)

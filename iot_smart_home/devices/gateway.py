@@ -3,7 +3,6 @@ import time
 
 from loguru import logger
 from paho.mqtt.client import Client, MQTTMessage
-from pydantic import BaseModel
 
 from iot_smart_home.devices.base import MqttDeviceBase
 from iot_smart_home.schemas import Device
@@ -15,12 +14,14 @@ class MqttGateway(MqttDeviceBase):
         self,
         mqtt_broker_host,
         mqtt_broker_port,
+        mqtt_topic,
         discovery_topic,
         pooling_timeout: float = 10,
     ):
         super().__init__(mqtt_broker_host, mqtt_broker_port)
         self.mqtt_broker_host = mqtt_broker_host
         self.mqtt_broker_port = mqtt_broker_port
+        self.mqtt_topic = mqtt_topic
         self.devices: dict[str, Device] = {}
         self.discovery_topic = discovery_topic
         self.pooling_timeout = pooling_timeout
@@ -38,6 +39,9 @@ class MqttGateway(MqttDeviceBase):
         device = Device(**json.loads(msg.payload.decode()))
         if msg.topic == f"{self.discovery_topic}/set":
             self.devices[device.name] = device
+            dest_topic = f"{self.mqtt_topic}/{device.topic}"
+            client.subscribe(dest_topic)
+            logger.info(f"Sub to topic '{dest_topic}'")
         if msg.topic == device.topic:
             client.publish(device.topic, msg.payload, msg.qos, msg.retain)
 
@@ -53,6 +57,6 @@ class MqttGateway(MqttDeviceBase):
 
 if __name__ == "__main__":
     gateway_controller = MqttGateway(
-        settings.mqtt_broker_host, settings.mqtt_broker_port, settings.discovery_topic
+        settings.mqtt_broker_host, settings.mqtt_broker_port, mqtt_topic="gateway", discovery_topic=settings.discovery_topic
     )
     gateway_controller.run()
