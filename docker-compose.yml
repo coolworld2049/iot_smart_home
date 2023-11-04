@@ -53,7 +53,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      DEVICE_MQTT_TOPIC: gateway
+      IOT_SMART_HOME_MQTT_TOPIC: gateway
     restart: always
   sensor-climate:
     build: .
@@ -62,7 +62,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      DEVICE_MQTT_TOPIC: sensors/climate
+      IOT_SMART_HOME_MQTT_TOPIC: sensors/climate
     restart: always
   sensor-lamp:
     build: .
@@ -71,7 +71,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      DEVICE_MQTT_TOPIC: sensors/lamp
+      IOT_SMART_HOME_MQTT_TOPIC: sensors/lamp
     restart: always
   sensor-motion:
     build: .
@@ -80,7 +80,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      DEVICE_MQTT_TOPIC: sensors/motion
+      IOT_SMART_HOME_MQTT_TOPIC: sensors/motion
     restart: always
   homeassistant:
     container_name: homeassistant

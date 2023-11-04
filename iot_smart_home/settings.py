@@ -16,7 +16,7 @@ class Settings(MqttSettings):
     gateway_topic: str = "gateway"
 
     model_config = SettingsConfigDict(
-        env_prefix="DEVICE_",
+        env_prefix="IOT_SMART_HOME_",
         env_file_encoding="utf-8",
     )
 
