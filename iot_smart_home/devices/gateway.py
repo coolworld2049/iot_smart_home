@@ -15,48 +15,43 @@ class MqttGateway(MqttDeviceBase):
         mqtt_broker_host,
         mqtt_broker_port,
         mqtt_topic,
-        discovery_topic,
         pooling_timeout: float = 10,
     ):
         super().__init__(mqtt_broker_host, mqtt_broker_port)
         self.mqtt_broker_host = mqtt_broker_host
         self.mqtt_broker_port = mqtt_broker_port
         self.mqtt_topic = mqtt_topic
-        self.devices: dict[str, Device] = {}
-        self.discovery_topic = discovery_topic
         self.pooling_timeout = pooling_timeout
+        self.devices: dict[str, Device] = {}
 
     def discover_devices(self, client: Client):
         pass
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
-        client.subscribe(f"{self.discovery_topic}/set")
+        client.subscribe(f"{self.mqtt_topic}/set")
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if not msg.payload:
             raise ValueError(msg)
         device = Device(**json.loads(msg.payload.decode()))
-        if msg.topic == f"{self.discovery_topic}/set":
+        if msg.topic == f"{self.mqtt_topic}/set":
             self.devices[device.name] = device
-            dest_topic = f"{self.mqtt_topic}/{device.topic}"
-            client.subscribe(dest_topic)
-            logger.info(f"Sub to topic '{dest_topic}'")
+            logger.info(f"Added device '{device.name}'")
         if msg.topic == device.topic:
             client.publish(device.topic, msg.payload, msg.qos, msg.retain)
 
     def updater(self, client: Client):
         while True:
-            devices = json.dumps(
-                {k: v.model_dump() for k, v in self.devices.items()}, indent=2
-            )
-            logger.info(f"Devices {devices}")
+            logger.info(f"Devices {self.devices}")
             self.discover_devices(client)
             time.sleep(self.pooling_timeout)
 
 
+gateway_controller = MqttGateway(
+    settings.mqtt_broker_host,
+    settings.mqtt_broker_port,
+    mqtt_topic=settings.gateway_topic,
+)
 if __name__ == "__main__":
-    gateway_controller = MqttGateway(
-        settings.mqtt_broker_host, settings.mqtt_broker_port, mqtt_topic="gateway", discovery_topic=settings.discovery_topic
-    )
     gateway_controller.run()

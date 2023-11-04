@@ -67,37 +67,37 @@ class MqttSensorBase(MqttDeviceBase, ABC):
         state: DeviceState | None = None,
         *,
         pub_frequency: float,
-        discovery_topic: str,
+        gateway_topic: str,
     ):
         super().__init__(mqtt_broker_host, mqtt_broker_port)
         self.mqtt_topic = mqtt_topic
         self.state_topic = self.mqtt_topic + "/state"
-        self.discovery_topic = discovery_topic
         self.pub_frequency = pub_frequency
         self.device = Device(state=state or DeviceState.off, topic=self.mqtt_topic)
+        self.gateway_topic = gateway_topic
 
     @abstractmethod
     def measure(self) -> str:
         pass
 
     def advertise_to_gateway(self, client: Client):
-        set_topic = f"{self.discovery_topic}/set"
+        set_topic = f"{self.gateway_topic}/set"
         logger.info(f"Advertise to gateway by topic {set_topic}")
         client.publish(set_topic, self.device.model_dump_json(), qos=1)
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
         logger.info(f"Connected to {client} with result code {str(rc)}")
         client.subscribe(self.state_topic)
-        client.subscribe(self.discovery_topic)
-        logger.info(f"Sub to topic {self.state_topic}, {self.discovery_topic}")
+        client.subscribe(self.gateway_topic)
+        logger.info(f"Sub to topic {self.state_topic}, {self.gateway_topic}")
         self.advertise_to_gateway(client)
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if msg.payload and msg.topic == f"{self.mqtt_topic}/state":
             self.change_state(client, msg)
-        if msg.payload and msg.topic == self.discovery_topic:
-            client.publish(self.discovery_topic, self.device.model_dump_json())
+        if msg.payload and msg.topic == self.gateway_topic:
+            client.publish(self.gateway_topic, self.device.model_dump_json())
 
     def updater(self, client: Client):
         while True:

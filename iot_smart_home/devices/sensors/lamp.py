@@ -27,7 +27,7 @@ class LampSensor(MqttSensorBase):
             mqtt_topic,
             state,
             pub_frequency=settings.pub_frequency,
-            discovery_topic=settings.discovery_topic,
+            gateway_topic=settings.gateway_topic,
         )
 
     def measure(self):

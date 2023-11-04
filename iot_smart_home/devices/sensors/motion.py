@@ -18,10 +18,10 @@ class MotionSensorResponse(BaseModel):
     zone_shape: str = Field(
         default_factory=lambda: random.choice(["Square", "Rectangle", "Triangle"])
     )
-    detection_distance: str = Field(
+    detection_distance: int = Field(
         default_factory=lambda: random.choice(list(range(1, 5)))
     )
-    detection_angle: str = Field(
+    detection_angle: int = Field(
         default_factory=lambda: random.choice(list(range(60, 120)))
     )
 
@@ -34,7 +34,7 @@ class MotionSensor(MqttSensorBase):
             mqtt_topic,
             state,
             pub_frequency=settings.pub_frequency,
-            discovery_topic=settings.discovery_topic,
+            gateway_topic=settings.gateway_topic,
         )
 
     def measure(self):
