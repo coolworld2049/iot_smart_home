@@ -25,7 +25,6 @@ class LampSensor(MqttSensorBase):
             mqtt_broker_host,
             mqtt_broker_port,
             mqtt_topic,
-            gateway_topic=settings.gateway_topic,
             pub_frequency=settings.pub_frequency,
         )
 

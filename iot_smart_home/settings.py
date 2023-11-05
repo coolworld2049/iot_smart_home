@@ -17,7 +17,6 @@ class MqttSettings(BaseSettings):
 class Settings(MqttSettings):
     pub_frequency: float = 1
     sensor_topic: str = "sensors"
-    gateway_topic: str = "gateway"
     controller_topic: str = "controller"
     shared_aes_key: str
     log_level: str = "INFO"

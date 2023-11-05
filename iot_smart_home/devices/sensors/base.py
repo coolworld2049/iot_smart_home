@@ -16,7 +16,6 @@ class MqttSensorBase(MqttSecureDeviceBase):
         mqtt_broker_host,
         mqtt_broker_port,
         mqtt_topic,
-        gateway_topic,
         pub_frequency,
     ):
         super().__init__(mqtt_broker_host, mqtt_broker_port)
@@ -24,7 +23,6 @@ class MqttSensorBase(MqttSecureDeviceBase):
         self.state_topic = mqtt_topic + self.STATE_TOPIC_SUFFIX
         self.pub_frequency = pub_frequency
         self.device = Device(state=DeviceState.on, topic=self.mqtt_topic)
-        self.gateway_topic = gateway_topic
 
     @abstractmethod
     def measure(self, client: Client) -> Device:
@@ -53,7 +51,6 @@ class MqttSensorBase(MqttSecureDeviceBase):
             time.sleep(self.pub_frequency)
 
     def publish(self, client: Client, payload: str):
-        topic = f"{self.gateway_topic}/devices"
-        logger.info(f"Publish to topic: '{topic}' payload {payload}")
+        logger.info(f"Publish to topic: '{self.mqtt_topic}' payload {payload}")
         payload = self.payload_encryptor.encrypt_payload(payload.encode())
-        client.publish(topic, payload)
+        client.publish(self.mqtt_topic, payload)

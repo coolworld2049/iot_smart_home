@@ -11,7 +11,7 @@ from iot_smart_home.schemas import Device
 from iot_smart_home.settings import settings
 
 app = Flask(__name__)
-app.config["SECRET"] = uuid.uuid4()
+app.config["SECRET"] = "secret"
 app.config[
     "MQTT_CLIENT_ID"
 ] = f"MQTTv5-{settings.mqtt_broker_host}-{settings.mqtt_broker_port}-{uuid.uuid4()}"
@@ -29,15 +29,19 @@ encryptor = PayloadEncryptor(settings.shared_aes_key)
 
 def update_devices(message):
     msg_payload = json.loads(message.payload.decode())
-    payload = {k: Device(**v) for k, v in msg_payload.items()}
-    devices.update(payload)
+    device = Device(**msg_payload)
+    devices.update(
+        {
+            device.name: device,
+        }
+    )
 
 
 @mqtt.on_connect()
 def mqtt_handle_connect(client, userdata, flags, rc):
     if rc == 0:
         logger.info("Connected successfully")
-        mqtt.subscribe(f"devices")
+        mqtt.subscribe(settings.sensor_topic)
     else:
         logger.info("Bad connection. Code:", rc)
 
