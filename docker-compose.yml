@@ -53,7 +53,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      IOT_SMART_HOME_MQTT_TOPIC: sensors/climate
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/climate
     restart: always
   sensor-lamp:
     build: .
@@ -62,7 +62,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      IOT_SMART_HOME_MQTT_TOPIC: sensors/lamp
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/lamp
     restart: always
   sensor-motion:
     build: .
@@ -71,7 +71,7 @@ services:
     env_file:
       - .env.prod
     environment:
-      IOT_SMART_HOME_MQTT_TOPIC: sensors/motion
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
     restart: always
   gateway:
     build: .
@@ -84,6 +84,17 @@ services:
       - sensor-climate
       - sensor-lamp
       - sensor-motion
+  controller:
+    build: .
+    hostname: controller
+    command: python -m iot_smart_home.devices.controller
+    env_file:
+      - .env.prod
+    restart: always
+    depends_on:
+      - gateway
+    ports:
+      - "5000:5000"
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable

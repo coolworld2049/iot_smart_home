@@ -45,6 +45,7 @@ class MqttSensorBase(MqttDeviceBase, ABC):
                 obj.attributes = None
                 logger.warning(f"Device.state={self.device.state}")
             self.publish(client, obj.model_dump_json())
+            self.device = Device(state=self.device.state, topic=self.mqtt_topic)
             time.sleep(self.pub_frequency)
 
     def change_state(self, client: Client, msg: MQTTMessage):

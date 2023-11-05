@@ -1,4 +1,5 @@
 import json
+import uuid
 
 from flask import Flask, request, jsonify, render_template, redirect
 from flask_bootstrap import Bootstrap
@@ -9,11 +10,14 @@ from iot_smart_home.schemas import Device
 from iot_smart_home.settings import settings
 
 app = Flask(__name__)
-app.config["SECRET"] = "secret"
+app.config["SECRET"] = uuid.uuid4()
+app.config[
+    "MQTT_CLIENT_ID"
+] = f"MQTTv5-{settings.mqtt_broker_host}-{settings.mqtt_broker_port}-{uuid.uuid4()}"
 app.config["MQTT_BROKER_URL"] = settings.mqtt_broker_host
 app.config["MQTT_BROKER_PORT"] = settings.mqtt_broker_port
-app.config["MQTT_USERNAME"] = ""
-app.config["MQTT_PASSWORD"] = ""
+app.config["MQTT_USERNAME"] = settings.mqtt_broker_username
+app.config["MQTT_PASSWORD"] = settings.mqtt_broker_password
 app.config["MQTT_KEEPALIVE"] = 5
 
 mqtt = Mqtt(app)
@@ -44,17 +48,12 @@ def handle_mqtt_message(client, userdata, message):
     update_devices(message)
 
 
-@app.route("/publish", methods=["POST"])
-def publish_message():
-    request_data = request.get_json()
-    publish_result = mqtt.publish(request_data["topic"], request_data["msg"])
-    return jsonify({"code": publish_result[0]})
-
-
 @app.route("/")
 def index():
     return render_template(
-        "index.html", devices=devices, reload_every_ms=settings.pub_frequency * 1000
+        "index.html",
+        devices=devices,
+        reload_every_ms=settings.pub_frequency * 1000,
     )
 
 
@@ -68,5 +67,9 @@ def mqtt_device_switch_state():
     return redirect("/")
 
 
-if __name__ == "__main__":
+def main():
     app.run(host="0.0.0.0", port=5000)
+
+
+if __name__ == "__main__":
+    main()

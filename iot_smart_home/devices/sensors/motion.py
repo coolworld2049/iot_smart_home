@@ -43,7 +43,7 @@ class MotionSensor(MqttSensorBase):
 motion = MotionSensor(
     mqtt_broker_host=settings.mqtt_broker_host,
     mqtt_broker_port=settings.mqtt_broker_port,
-    mqtt_topic=settings.mqtt_topic,
+    mqtt_topic=settings.sensor_topic,
 )
 
 if __name__ == "__main__":

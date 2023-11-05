@@ -10,11 +10,13 @@ load_dotenv()
 class MqttSettings(BaseSettings):
     mqtt_broker_host: str = "localhost"
     mqtt_broker_port: int = 1883
-    mqtt_topic: str
+    mqtt_broker_username: str | None = None
+    mqtt_broker_password: str | None = None
 
 
 class Settings(MqttSettings):
     pub_frequency: float = 1
+    sensor_topic: str = "sensor"
     gateway_topic: str = "gateway"
     controller_topic: str = "controller"
     log_level: str = "INFO"
