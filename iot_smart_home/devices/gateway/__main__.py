@@ -15,13 +15,11 @@ class MqttGateway(MqttSecureDeviceBase):
         mqtt_broker_host,
         mqtt_broker_port,
         mqtt_topic,
-        pooling_timeout: float = 10,
     ):
         super().__init__(mqtt_broker_host, mqtt_broker_port)
         self.mqtt_broker_host = mqtt_broker_host
         self.mqtt_broker_port = mqtt_broker_port
         self.mqtt_topic = mqtt_topic
-        self.pooling_timeout = pooling_timeout
         self.devices: dict[str, Device] = {}
 
     def on_connect(self, client: Client, userdata, flags, rc, property):
@@ -31,13 +29,13 @@ class MqttGateway(MqttSecureDeviceBase):
         topic = "devices"
         devices = {k: v.model_dump() for k, v in self.devices.items()}
         payload = json.dumps(devices)
+        logger.info(f"Pub to topic '{topic}' {list(devices.keys())}")
         payload = self.payload_encryptor.encrypt_payload(payload.encode())
-        logger.info(f"Pub to topic '{topic}' payload {payload}")
         client.publish(topic, payload)
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
-        logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
+        logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         from_device = Device(**json.loads(msg.payload.decode()))
         if msg.topic == f"{self.mqtt_topic}/devices":
             self.devices[from_device.name] = from_device
@@ -46,7 +44,7 @@ class MqttGateway(MqttSecureDeviceBase):
     def updater(self, client: Client):
         while True:
             logger.info(f"Devices {list(self.devices.keys())}")
-            time.sleep(self.pooling_timeout)
+            time.sleep(settings.pub_frequency)
 
 
 gateway_controller = MqttGateway(

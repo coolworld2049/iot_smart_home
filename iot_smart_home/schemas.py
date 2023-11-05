@@ -15,7 +15,7 @@ class DeviceState(str, Enum):
 class Device(BaseModel):
     name: str = platform.node()
     topic: str | None = None
-    attributes: Any | None = None
     state: DeviceState | None = None
+    attributes: Any | None = None
     uptime: float = Field(default_factory=lambda: uptime())
     last_changed: str = Field(default_factory=lambda: datetime.utcnow().__str__())

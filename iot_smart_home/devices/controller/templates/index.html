@@ -77,7 +77,7 @@
     <td>{{ device.last_changed }}</td>
     <td>
       <form action="/switch_state">
-        <input type="hidden" name="name" value="{{ device.name }}">
+        <input type="hidden" name="name" value="{{ name }}">
         <input type="submit" name="state" value="on">
         <input type="submit" name="state" value="off">
       </form>

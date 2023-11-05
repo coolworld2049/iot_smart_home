@@ -54,7 +54,7 @@ services:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/climate
+      IOT_SMART_HOME_SENSOR_TOPIC: sensors/climate
     restart: always
   sensor-lamp:
     build: .
@@ -64,7 +64,7 @@ services:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/lamp
+      IOT_SMART_HOME_SENSOR_TOPIC: sensors/lamp
     restart: always
   sensor-motion:
     build: .
@@ -74,7 +74,7 @@ services:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
+      IOT_SMART_HOME_SENSOR_TOPIC: sensors/motion
     restart: always
   gateway:
     build: .

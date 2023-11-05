@@ -53,6 +53,7 @@ def handle_mqtt_message(client, userdata, message):
 
 @app.route("/")
 def index():
+    print(devices)
     return render_template(
         "index.html",
         devices=devices,
@@ -67,7 +68,8 @@ def mqtt_device_switch_state():
     if not devices.get(name):
         return jsonify(dict(message=f"Device {name} not found"))
     payload = encryptor.encrypt_payload(state.encode())
-    mqtt.publish(f"{devices.get(name).topic}/state", payload=payload)
+    topic = f"{devices.get(name).topic}/state"
+    mqtt.publish(topic, payload=payload)
     return redirect("/")
 
 

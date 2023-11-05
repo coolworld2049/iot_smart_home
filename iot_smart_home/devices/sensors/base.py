@@ -39,7 +39,8 @@ class MqttSensorBase(MqttSecureDeviceBase):
         msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if msg.payload and msg.topic == self.state_topic:
-            self.change_state(client, msg.payload)
+            self.device.state = msg.payload.decode()
+            logger.info(f"Received state change {self.device.state}")
             self.publish(client, self.device.model_dump_json())
 
     def updater(self, client: Client):
@@ -47,17 +48,12 @@ class MqttSensorBase(MqttSecureDeviceBase):
             obj = self.measure()
             if self.device.state == DeviceState.off:
                 obj.attributes = None
-                logger.warning(self.device.state)
-            self.publish(client, obj.model_dump_json())
             self.device = Device(state=self.device.state, topic=self.mqtt_topic)
+            self.publish(client, obj.model_dump_json())
             time.sleep(self.pub_frequency)
 
-    def change_state(self, client: Client, payload):
-        self.device.state = payload.decode()
-        logger.info(f"Received state change {self.device.state}")
-
     def publish(self, client: Client, payload: str):
-        payload = self.payload_encryptor.encrypt_payload(payload.encode())
         topic = f"{self.gateway_topic}/devices"
         logger.info(f"Publish to topic: '{topic}' payload {payload}")
+        payload = self.payload_encryptor.encrypt_payload(payload.encode())
         client.publish(topic, payload)
