@@ -46,15 +46,6 @@ services:
     depends_on:
       emqx1:
         condition: service_healthy
-  gateway:
-    build: .
-    hostname: gateway
-    command: python -m iot_smart_home.devices.gateway
-    env_file:
-      - .env.prod
-    environment:
-      IOT_SMART_HOME_MQTT_TOPIC: gateway
-    restart: always
   sensor-climate:
     build: .
     hostname: sensor-climate
@@ -82,6 +73,17 @@ services:
     environment:
       IOT_SMART_HOME_MQTT_TOPIC: sensors/motion
     restart: always
+  gateway:
+    build: .
+    hostname: gateway
+    command: python -m iot_smart_home.devices.gateway
+    env_file:
+      - .env.prod
+    restart: always
+    depends_on:
+      - sensor-climate
+      - sensor-lamp
+      - sensor-motion
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable

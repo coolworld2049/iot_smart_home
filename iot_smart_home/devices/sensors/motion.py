@@ -37,7 +37,7 @@ class MotionSensor(MqttSensorBase):
 
     def measure(self):
         self.device.attributes = MotionSensorResponse()
-        return self.device.model_dump_json()
+        return self.device
 
 
 motion = MotionSensor(

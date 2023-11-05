@@ -3,7 +3,6 @@ import random
 from pydantic import BaseModel, Field
 
 from iot_smart_home.devices.sensors.base import MqttSensorBase
-from iot_smart_home.schemas import DeviceState
 from iot_smart_home.settings import settings
 
 
@@ -31,7 +30,7 @@ class LampSensor(MqttSensorBase):
 
     def measure(self):
         self.device.attributes = LampSensorResponse()
-        return self.device.model_dump_json()
+        return self.device
 
 
 lamp = LampSensor(

@@ -96,33 +96,33 @@ mqtt:
       icon: mdi:motion-sensor
   - sensor:
       state_topic: "sensors/motion"
-      name: "Light Intensity"
+      name: "Motion Light Intensity"
       unit_of_measurement: "lux"
       value_template: "{{ value_json.attributes.light_intensity_lux | round(1) }}"
       unique_id: "light_intensity"
       icon: mdi:brightness-5
   - sensor:
       state_topic: "sensors/motion"
-      name: "Zone Size"
+      name: "Motion Zone Size"
       value_template: "{{ value_json.attributes.zone_size }}"
       unique_id: "zone_size"
       icon: mdi:map-marker-radius
   - sensor:
       state_topic: "sensors/motion"
-      name: "Zone Shape"
+      name: "Motion Zone Shape"
       value_template: "{{ value_json.attributes.zone_shape }}"
       unique_id: "zone_shape"
       icon: mdi:shape
   - sensor:
       state_topic: "sensors/motion"
-      name: "Detection Distance"
+      name: "Motion Detection Distance"
       unit_of_measurement: "m"
       value_template: "{{ value_json.attributes.detection_distance }}"
       unique_id: "detection_distance"
       icon: mdi:ruler
   - sensor:
       state_topic: "sensors/motion"
-      name: "Detection Angle"
+      name: "Motion Detection Angle"
       unit_of_measurement: "°"
       value_template: "{{ value_json.attributes.detection_angle }}"
       unique_id: "detection_angle"

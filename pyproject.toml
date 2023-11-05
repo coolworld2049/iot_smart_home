@@ -11,17 +11,15 @@ python = "^3.11"
 paho-mqtt = "^1.6.1"
 pydantic = "^2.4.2"
 pydantic-settings = "^2.0.3"
-fastapi = "^0.104.1"
 loguru = "^0.7.2"
 uptime = "^3.0.1"
+flask-mqtt = "^1.1.1"
+flask-bootstrap = "^3.3.7.1"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.1"
 
-
-[tool.poetry.group.ha.dependencies]
-homeassistant = "^2023.11.0"
 
 [build-system]
 requires = ["poetry-core"]

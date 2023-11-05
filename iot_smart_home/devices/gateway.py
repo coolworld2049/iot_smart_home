@@ -24,33 +24,28 @@ class MqttGateway(MqttDeviceBase):
         self.pooling_timeout = pooling_timeout
         self.devices: dict[str, Device] = {}
 
-    def discover_devices(self, client: Client):
-        pass
-
     def on_connect(self, client: Client, userdata, flags, rc, property):
-        client.subscribe(f"{self.mqtt_topic}/set")
-        client.subscribe(f"{self.mqtt_topic}/delete")
+        client.subscribe(f"{self.mqtt_topic}/devices")
+        client.subscribe(f"devices")
+
+    def publish_to_devices(self, client: Client):
+        topic = "devices"
+        devices = {k: v.model_dump() for k, v in self.devices.items()}
+        client.publish(topic, json.dumps(devices))
+        logger.info(f"Pub to topic {topic} payload {json.dumps(devices)}")
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if not msg.payload:
             raise ValueError(msg)
-        device = Device(**json.loads(msg.payload.decode()))
-        if msg.topic == f"{self.mqtt_topic}/set":
-            self.devices[device.name] = device
-            logger.info(f"Added device '{device.name}'")
-        if msg.topic == f"{self.mqtt_topic}/delete":
-            if self.devices.get(device.name):
-                del self.devices[device.name]
-                logger.info(f"Removed device '{device.name}'")
-        if msg.topic == device.topic:
-            logger.info(f"Redirect to topic {device.topic}")
-            client.publish(device.topic, msg.payload, msg.qos, msg.retain)
+        from_device = Device(**json.loads(msg.payload.decode()))
+        if msg.topic == f"{self.mqtt_topic}/devices":
+            self.devices[from_device.name] = from_device
+            self.publish_to_devices(client)
 
     def updater(self, client: Client):
         while True:
-            logger.info(f"Devices {self.devices}")
-            self.discover_devices(client)
+            logger.info(f"Devices {list(self.devices.keys())}")
             time.sleep(self.pooling_timeout)
 
 

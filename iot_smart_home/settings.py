@@ -1,8 +1,7 @@
 import sys
 
-from loguru import logger
-
 from dotenv import load_dotenv
+from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
@@ -17,6 +16,7 @@ class MqttSettings(BaseSettings):
 class Settings(MqttSettings):
     pub_frequency: float = 1
     gateway_topic: str = "gateway"
+    controller_topic: str = "controller"
     log_level: str = "INFO"
 
     model_config = SettingsConfigDict(
