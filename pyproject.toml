@@ -15,6 +15,7 @@ loguru = "^0.7.2"
 uptime = "^3.0.1"
 flask-mqtt = "^1.1.1"
 flask-bootstrap = "^3.3.7.1"
+pycryptodome = "^3.19.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -4,6 +4,9 @@ from abc import ABC, abstractmethod
 from loguru import logger
 from paho.mqtt.client import Client, MQTTMessage, MQTTv5
 
+from iot_smart_home.crypt import PayloadEncryptor
+from iot_smart_home.settings import settings
+
 
 class MqttDeviceBase(ABC):
     def __init__(
@@ -31,14 +34,17 @@ class MqttDeviceBase(ABC):
 
     @abstractmethod
     def on_connect(self, client: Client, userdata, flags, rc, property):
+        """Handle the MQTT client's on_connect event."""
         pass
 
     @abstractmethod
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
+        """Handle the MQTT client's on_message event."""
         pass
 
     @abstractmethod
     def updater(self, client: Client):
+        """Update the MQTT client as needed."""
         raise NotImplementedError
 
     def run(self):
@@ -53,3 +59,9 @@ class MqttDeviceBase(ABC):
             finally:
                 client.loop_stop()
                 client.disconnect()
+
+
+class MqttSecureDeviceBase(MqttDeviceBase, ABC):
+    def __init__(self, mqtt_broker_host, mqtt_broker_port):
+        super().__init__(mqtt_broker_host, mqtt_broker_port)
+        self.payload_encryptor = PayloadEncryptor(settings.shared_aes_key)

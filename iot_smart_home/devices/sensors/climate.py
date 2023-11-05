@@ -37,11 +37,14 @@ class ClimateSensor(MqttSensorBase):
         return self.device
 
 
-climate = ClimateSensor(
-    mqtt_broker_host=settings.mqtt_broker_host,
-    mqtt_broker_port=settings.mqtt_broker_port,
-    mqtt_topic=settings.sensor_topic,
-)
+def main():
+    climate = ClimateSensor(
+        mqtt_broker_host=settings.mqtt_broker_host,
+        mqtt_broker_port=settings.mqtt_broker_port,
+        mqtt_topic=settings.sensor_topic,
+    )
+    climate.run()
+
 
 if __name__ == "__main__":
-    climate.run()
+    main()

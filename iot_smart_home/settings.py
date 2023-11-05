@@ -19,6 +19,7 @@ class Settings(MqttSettings):
     sensor_topic: str = "sensor"
     gateway_topic: str = "gateway"
     controller_topic: str = "controller"
+    shared_aes_key: str
     log_level: str = "INFO"
 
     model_config = SettingsConfigDict(

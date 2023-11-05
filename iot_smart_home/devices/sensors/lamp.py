@@ -33,11 +33,14 @@ class LampSensor(MqttSensorBase):
         return self.device
 
 
-lamp = LampSensor(
-    mqtt_broker_host=settings.mqtt_broker_host,
-    mqtt_broker_port=settings.mqtt_broker_port,
-    mqtt_topic=settings.sensor_topic,
-)
+def main():
+    lamp = LampSensor(
+        mqtt_broker_host=settings.mqtt_broker_host,
+        mqtt_broker_port=settings.mqtt_broker_port,
+        mqtt_topic=settings.sensor_topic,
+    )
+    lamp.run()
+
 
 if __name__ == "__main__":
-    lamp.run()
+    main()

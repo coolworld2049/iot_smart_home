@@ -40,11 +40,14 @@ class MotionSensor(MqttSensorBase):
         return self.device
 
 
-motion = MotionSensor(
-    mqtt_broker_host=settings.mqtt_broker_host,
-    mqtt_broker_port=settings.mqtt_broker_port,
-    mqtt_topic=settings.sensor_topic,
-)
+def main():
+    motion = MotionSensor(
+        mqtt_broker_host=settings.mqtt_broker_host,
+        mqtt_broker_port=settings.mqtt_broker_port,
+        mqtt_topic=settings.sensor_topic,
+    )
+    motion.run()
+
 
 if __name__ == "__main__":
-    motion.run()
+    main()
