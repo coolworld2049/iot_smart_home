@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IoT smart home Controller</title>
+  <title>IoT Smart Home Controller</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,7 +46,7 @@
 </head>
 <body>
 
-<h1>Manage simulated IoT devices</h1>
+<h1>Simulated IoT devices</h1>
 
 <table>
   <tr>
@@ -76,10 +76,14 @@
     <td>{{ device.uptime }}</td>
     <td>{{ device.last_changed }}</td>
     <td>
-      <form action="/switch_state">
+      <form action="/switch_device_state">
         <input type="hidden" name="name" value="{{ name }}">
         <input type="submit" name="state" value="on">
         <input type="submit" name="state" value="off">
+      </form>
+      <form action="/delete_device"> <!-- Added a form for deleting device -->
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="submit" name="delete" value="❌">
       </form>
     </td>
   </tr>

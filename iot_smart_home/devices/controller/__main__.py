@@ -53,16 +53,16 @@ def handle_mqtt_message(client, userdata, message):
 
 @app.route("/")
 def index():
-    print(devices)
+    logger.info(devices)
     return render_template(
         "index.html",
         devices=devices,
-        reload_every_ms=settings.pub_frequency * 1000,
+        reload_every_ms=settings.pub_frequency * 2 * 1000,
     )
 
 
-@app.route("/switch_state")
-def mqtt_device_switch_state():
+@app.route("/switch_device_state")
+def switch_device_state():
     name = request.args.get("name")
     state = request.args.get("state")
     if not devices.get(name):
@@ -70,6 +70,18 @@ def mqtt_device_switch_state():
     payload = encryptor.encrypt_payload(state.encode())
     topic = f"{devices.get(name).topic}/state"
     mqtt.publish(topic, payload=payload)
+    return redirect("/")
+
+
+@app.route("/delete_device")
+def delete_device():
+    name = request.args.get("name")
+    if not devices.get(name):
+        return jsonify(dict(message=f"Device {name} not found"))
+    try:
+        del devices[name]
+    except:
+        pass
     return redirect("/")
 
 

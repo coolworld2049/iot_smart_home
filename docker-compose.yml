@@ -1,5 +1,9 @@
 version: '3.9'
 
+networks:
+  default:
+    driver: bridge
+
 services:
   emqx1:
     image: emqx:5.1.6
@@ -56,6 +60,8 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_SENSOR_TOPIC: sensors/climate
     restart: always
+    networks:
+      - default
   sensor-lamp:
     build: .
     hostname: sensor-lamp
@@ -66,6 +72,8 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_SENSOR_TOPIC: sensors/lamp
     restart: always
+    networks:
+      - default
   sensor-motion:
     build: .
     hostname: sensor-motion
@@ -76,6 +84,8 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_SENSOR_TOPIC: sensors/motion
     restart: always
+    networks:
+      - default
   gateway:
     build: .
     hostname: gateway
@@ -89,6 +99,8 @@ services:
       - sensor-climate
       - sensor-lamp
       - sensor-motion
+    networks:
+      - default
   controller:
     build: .
     hostname: controller
@@ -102,6 +114,8 @@ services:
       - gateway
     ports:
       - "5000:5000"
+    networks:
+      - default
   homeassistant:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
@@ -116,6 +130,8 @@ services:
       - "8123:8123"
     depends_on:
       - emqx2
+    networks:
+      - default
 volumes:
   emqx1_data:
   emqx2_data:
