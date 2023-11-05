@@ -27,7 +27,7 @@ class MqttSensorBase(MqttSecureDeviceBase):
         self.gateway_topic = gateway_topic
 
     @abstractmethod
-    def measure(self) -> Device:
+    def measure(self, client: Client) -> Device:
         """Measure and return the device state."""
         pass
 
@@ -45,7 +45,7 @@ class MqttSensorBase(MqttSecureDeviceBase):
 
     def updater(self, client: Client):
         while True:
-            obj = self.measure()
+            obj = self.measure(client)
             if self.device.state == DeviceState.off:
                 obj.attributes = None
             self.device = Device(state=self.device.state, topic=self.mqtt_topic)
