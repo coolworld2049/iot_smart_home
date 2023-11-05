@@ -86,21 +86,6 @@ services:
     restart: always
     networks:
       - default
-  gateway:
-    build: .
-    hostname: gateway
-    command: python -m iot_smart_home.devices.gateway
-    env_file:
-      - .env
-    environment:
-      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-    restart: always
-    depends_on:
-      - sensor-climate
-      - sensor-lamp
-      - sensor-motion
-    networks:
-      - default
   controller:
     build: .
     hostname: controller
@@ -110,8 +95,6 @@ services:
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
     restart: always
-    depends_on:
-      - gateway
     ports:
       - "5000:5000"
     networks:

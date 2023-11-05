@@ -28,20 +28,19 @@ encryptor = PayloadEncryptor(settings.shared_aes_key)
 
 
 def update_devices(message):
-    msg_payload = json.loads(message.payload.decode())
-    device = Device(**msg_payload)
-    devices.update(
-        {
-            device.name: device,
-        }
-    )
+    try:
+        msg_payload = json.loads(message.payload.decode())
+        device = Device(**msg_payload)
+        devices[device.name] = device
+    except:
+        pass
 
 
 @mqtt.on_connect()
 def mqtt_handle_connect(client, userdata, flags, rc):
     if rc == 0:
         logger.info("Connected successfully")
-        mqtt.subscribe(settings.sensor_topic)
+        mqtt.subscribe(f"{settings.sensor_topic}/#")
     else:
         logger.info("Bad connection. Code:", rc)
 
