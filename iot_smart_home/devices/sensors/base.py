@@ -36,7 +36,7 @@ class MqttSensorBase(MqttSecureDeviceBase):
         logger.info(f"Subscribed to topic: {self.state_topic}")
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
-        # msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
+        msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if msg.payload and msg.topic == self.state_topic:
             self.change_state(client, msg.payload)
@@ -47,7 +47,7 @@ class MqttSensorBase(MqttSecureDeviceBase):
             obj = self.measure()
             if self.device.state == DeviceState.off:
                 obj.attributes = None
-                logger.warning(f"Device.state={self.device.state}")
+                logger.warning(self.device.state)
             self.publish(client, obj.model_dump_json())
             self.device = Device(state=self.device.state, topic=self.mqtt_topic)
             time.sleep(self.pub_frequency)

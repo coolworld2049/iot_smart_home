@@ -51,8 +51,9 @@ services:
     hostname: sensor-climate
     command: python -m iot_smart_home.devices.sensors.climate
     env_file:
-      - .env.prod
+      - .env
     environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/climate
     restart: always
   sensor-lamp:
@@ -60,8 +61,9 @@ services:
     hostname: sensor-lamp
     command: python -m iot_smart_home.devices.sensors.lamp
     env_file:
-      - .env.prod
+      - .env
     environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/lamp
     restart: always
   sensor-motion:
@@ -69,8 +71,9 @@ services:
     hostname: sensor-motion
     command: python -m iot_smart_home.devices.sensors.motion
     env_file:
-      - .env.prod
+      - .env
     environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
     restart: always
   gateway:
@@ -78,7 +81,9 @@ services:
     hostname: gateway
     command: python -m iot_smart_home.devices.gateway
     env_file:
-      - .env.prod
+      - .env
+    environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
     restart: always
     depends_on:
       - sensor-climate
@@ -89,7 +94,9 @@ services:
     hostname: controller
     command: python -m iot_smart_home.devices.controller
     env_file:
-      - .env.prod
+      - .env
+    environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
     restart: always
     depends_on:
       - gateway

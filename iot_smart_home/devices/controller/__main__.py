@@ -6,6 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_mqtt import Mqtt
 from loguru import logger
 
+from iot_smart_home.crypt import PayloadEncryptor
 from iot_smart_home.schemas import Device
 from iot_smart_home.settings import settings
 
@@ -20,9 +21,10 @@ app.config["MQTT_USERNAME"] = settings.mqtt_broker_username
 app.config["MQTT_PASSWORD"] = settings.mqtt_broker_password
 app.config["MQTT_KEEPALIVE"] = 5
 
-mqtt = Mqtt(app)
+mqtt = Mqtt(app, connect_async=True)
 bootstrap = Bootstrap(app)
 devices: dict[str, Device | None] = {}
+encryptor = PayloadEncryptor(settings.shared_aes_key)
 
 
 def update_devices(message):
@@ -42,8 +44,9 @@ def mqtt_handle_connect(client, userdata, flags, rc):
 
 @mqtt.on_message()
 def handle_mqtt_message(client, userdata, message):
+    message.payload = encryptor.decrypt_payload(message.payload)
     logger.info(
-        f"Received message on topic: {message.topic} with payload: {message.payload.decode()}"
+        f"Received message on topic '{message.topic}' payload {message.payload}"
     )
     update_devices(message)
 
@@ -63,7 +66,8 @@ def mqtt_device_switch_state():
     state = request.args.get("state")
     if not devices.get(name):
         return jsonify(dict(message=f"Device {name} not found"))
-    mqtt.publish(f"{devices.get(name).topic}/state", payload=state.encode())
+    payload = encryptor.encrypt_payload(state.encode())
+    mqtt.publish(f"{devices.get(name).topic}/state", payload=payload)
     return redirect("/")
 
 

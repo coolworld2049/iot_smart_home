@@ -30,9 +30,9 @@ class MqttGateway(MqttSecureDeviceBase):
     def publish_to_devices(self, client: Client):
         topic = "devices"
         devices = {k: v.model_dump() for k, v in self.devices.items()}
-        logger.info(f"Pub to topic '{topic}' payload {json.dumps(devices)}")
         payload = json.dumps(devices)
         payload = self.payload_encryptor.encrypt_payload(payload.encode())
+        logger.info(f"Pub to topic '{topic}' payload {payload}")
         client.publish(topic, payload)
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
