@@ -3,8 +3,8 @@ import random
 from paho.mqtt.client import Client
 from pydantic import BaseModel, Field
 
-from iot_smart_home.devices.sensors.base import MqttSensorBase
-from iot_smart_home.settings import settings
+from iot_smart_home.devices.mqtt.sensors.base import MqttSensorBase
+from iot_smart_home.devices.mqtt.settings import settings
 
 
 class MotionSensorResponse(BaseModel):
@@ -27,12 +27,11 @@ class MotionSensorResponse(BaseModel):
 
 
 class MotionSensor(MqttSensorBase):
-    def __init__(self, mqtt_broker_host, mqtt_broker_port, mqtt_topic):
+    def __init__(self, broker_host, broker_port, mqtt_topic):
         super().__init__(
-            mqtt_broker_host,
-            mqtt_broker_port,
+            broker_host,
+            broker_port,
             mqtt_topic,
-            gateway_topic=settings.gateway_topic,
             pub_frequency=settings.pub_frequency,
         )
 
@@ -43,8 +42,8 @@ class MotionSensor(MqttSensorBase):
 
 def main():
     motion = MotionSensor(
-        mqtt_broker_host=settings.mqtt_broker_host,
-        mqtt_broker_port=settings.mqtt_broker_port,
+        broker_host=settings.broker_host,
+        broker_port=settings.broker_port,
         mqtt_topic=settings.sensor_topic,
     )
     motion.run()

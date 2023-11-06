@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IoT Smart Home Controller</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    td code {
+      background-color: #f7f7f7;
+      padding: 5px;
+    }
+
+    td form {
+      display: inline-block;
+    }
+
+  </style>
+  <script>
+    setTimeout(function () {
+        location.reload();
+    }, {{ reload_every_ms }});
+  </script>
+</head>
+<body>
+
+<h1>Simulated IoT devices</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Topic</th>
+    <th>State</th>
+    <th>Attributes</th>
+    <th>Uptime</th>
+    <th>Last Changed</th>
+    <th></th>
+  </tr>
+  {% if devices is not none %}
+  {% for name, device in devices.items() %}
+  <tr>
+    <td>{{ device.name }}</td>
+    <td>{{ device.topic }}</td>
+    <td>{{ device.state.value.upper() }}</td>
+    <td>
+      {% if device.attributes is not none %}
+      {% for k, v in device.attributes.items() %}
+      <br>{{ k }}: {{ v }}
+      {% endfor %}
+      {% else %}
+      N/A
+      {% endif %}
+    </td>
+    <td>{{ device.uptime }}</td>
+    <td>{{ device.last_changed }}</td>
+    <td>
+      <form action="/switch_device_state">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="submit" name="state" value="on">
+        <input type="submit" name="state" value="off">
+      </form>
+      <form action="/delete_device"> <!-- Added a form for deleting device -->
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="submit" name="delete" value="❌">
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  {% else %}
+  <tr>
+    <td colspan="7">No devices available.</td>
+  </tr>
+  {% endif %}
+</table>
+</body>
+</html>

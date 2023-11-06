@@ -2,42 +2,43 @@ import json
 import uuid
 
 from flask import Flask, request, jsonify, render_template, redirect
-from flask_bootstrap import Bootstrap
 from flask_mqtt import Mqtt
 from loguru import logger
 
-from iot_smart_home.crypt import PayloadEncryptor
-from iot_smart_home.schemas import Device
-from iot_smart_home.settings import settings
+from iot_smart_home.core.schemas import Device
+from iot_smart_home.devices.mqtt.securiy.crypt import PayloadEncryptor
+from iot_smart_home.devices.mqtt.settings import settings
 
 app = Flask(__name__)
 app.config["SECRET"] = uuid.uuid4()
 app.config[
     "MQTT_CLIENT_ID"
-] = f"MQTTv5-{settings.mqtt_broker_host}-{settings.mqtt_broker_port}-{uuid.uuid4()}"
-app.config["MQTT_BROKER_URL"] = settings.mqtt_broker_host
-app.config["MQTT_BROKER_PORT"] = settings.mqtt_broker_port
-app.config["MQTT_USERNAME"] = settings.mqtt_broker_username
-app.config["MQTT_PASSWORD"] = settings.mqtt_broker_password
+] = f"MQTTv5-{settings.broker_host}-{settings.broker_port}-{uuid.uuid4()}"
+app.config["MQTT_BROKER_URL"] = settings.broker_host
+app.config["MQTT_BROKER_PORT"] = settings.broker_port
+app.config["MQTT_USERNAME"] = settings.broker_username
+app.config["MQTT_PASSWORD"] = settings.broker_password
 app.config["MQTT_KEEPALIVE"] = 5
 
 mqtt = Mqtt(app, connect_async=True)
-bootstrap = Bootstrap(app)
 devices: dict[str, Device | None] = {}
 encryptor = PayloadEncryptor(settings.shared_aes_key)
 
 
 def update_devices(message):
-    msg_payload = json.loads(message.payload.decode())
-    payload = {k: Device(**v) for k, v in msg_payload.items()}
-    devices.update(payload)
+    try:
+        msg_payload = json.loads(message.payload.decode())
+        device = Device(**msg_payload)
+        devices.update({device.name: device})
+    except:
+        pass
 
 
 @mqtt.on_connect()
 def mqtt_handle_connect(client, userdata, flags, rc):
     if rc == 0:
         logger.info("Connected successfully")
-        mqtt.subscribe(f"devices")
+        mqtt.subscribe(f"{settings.sensor_topic}/#")
     else:
         logger.info("Bad connection. Code:", rc)
 
@@ -53,11 +54,11 @@ def handle_mqtt_message(client, userdata, message):
 
 @app.route("/")
 def index():
-    logger.info(devices)
+    logger.info(f"Devices {list(devices.keys())}")
     return render_template(
         "index.html",
         devices=devices,
-        reload_every_ms=settings.pub_frequency * 2 * 1000,
+        reload_every_ms=settings.pub_frequency * 1000,
     )
 
 
@@ -85,9 +86,5 @@ def delete_device():
     return redirect("/")
 
 
-def main():
-    app.run(host="0.0.0.0", port=5000)
-
-
 if __name__ == "__main__":
-    main()
+    app.run(host="0.0.0.0", port=5000)

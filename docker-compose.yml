@@ -53,43 +53,43 @@ services:
   sensor-climate:
     build: .
     hostname: sensor-climate
-    command: python -m iot_smart_home.devices.sensors.climate
+    command: python -m iot_smart_home.devices.mqtt.sensors.climate
     env_file:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_SENSOR_TOPIC: sensors/climate
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/climate
     restart: always
     networks:
       - default
   sensor-lamp:
     build: .
     hostname: sensor-lamp
-    command: python -m iot_smart_home.devices.sensors.lamp
+    command: python -m iot_smart_home.devices.mqtt.sensors.lamp
     env_file:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_SENSOR_TOPIC: sensors/lamp
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/lamp
     restart: always
     networks:
       - default
   sensor-motion:
     build: .
     hostname: sensor-motion
-    command: python -m iot_smart_home.devices.sensors.motion
+    command: python -m iot_smart_home.devices.mqtt.sensors.motion
     env_file:
       - .env
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-      IOT_SMART_HOME_SENSOR_TOPIC: sensors/motion
+      IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
     restart: always
     networks:
       - default
   gateway:
     build: .
     hostname: gateway
-    command: python -m iot_smart_home.devices.gateway
+    command: python -m iot_smart_home.devices.mqtt.gateway
     env_file:
       - .env
     environment:
@@ -104,7 +104,7 @@ services:
   controller:
     build: .
     hostname: controller
-    command: python -m iot_smart_home.devices.controller
+    command: python -m iot_smart_home.devices.mqtt.controller
     env_file:
       - .env
     environment:

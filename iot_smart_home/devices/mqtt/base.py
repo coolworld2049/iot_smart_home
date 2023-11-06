@@ -4,28 +4,28 @@ from abc import ABC, abstractmethod
 from loguru import logger
 from paho.mqtt.client import Client, MQTTMessage, MQTTv5
 
-from iot_smart_home.crypt import PayloadEncryptor
-from iot_smart_home.settings import settings
+from iot_smart_home.devices.mqtt.securiy.crypt import PayloadEncryptor
+from iot_smart_home.devices.mqtt.settings import settings
 
 
 class MqttDeviceBase(ABC):
     def __init__(
         self,
-        mqtt_broker_host,
-        mqtt_broker_port,
+        broker_host,
+        broker_port,
     ):
-        self.mqtt_broker_host = mqtt_broker_host
-        self.mqtt_broker_port = mqtt_broker_port
+        self.broker_host = broker_host
+        self.broker_port = broker_port
 
     def __enter__(self):
         client = Client(
-            client_id=f"MQTTv5-{self.mqtt_broker_host}:{self.mqtt_broker_port}-{uuid.uuid4()}",
+            client_id=f"MQTTv5-{self.broker_host}:{self.broker_port}-{uuid.uuid4()}",
             protocol=MQTTv5,
         )
         client.on_connect = self.on_connect
         client.on_message = self.on_message
         client.disconnect()
-        client.connect(self.mqtt_broker_host, self.mqtt_broker_port, clean_start=True)
+        client.connect(self.broker_host, self.broker_port, clean_start=True)
         logger.info("Client connected")
         return client
 
@@ -62,6 +62,6 @@ class MqttDeviceBase(ABC):
 
 
 class MqttSecureDeviceBase(MqttDeviceBase, ABC):
-    def __init__(self, mqtt_broker_host, mqtt_broker_port):
-        super().__init__(mqtt_broker_host, mqtt_broker_port)
+    def __init__(self, broker_host, broker_port):
+        super().__init__(broker_host, broker_port)
         self.payload_encryptor = PayloadEncryptor(settings.shared_aes_key)
