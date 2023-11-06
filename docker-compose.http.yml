@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  controller:
+    image: python3.11.6-slim-bullseye_iot_smart_home:latest
+    hostname: controller
+    command: python -m iot_smart_home.devices.http.controller
+    env_file:
+      - .env
+    environment:
+      IOT_SMART_HOME_HTTP_CONTROLLER_HOST: 0.0.0.0
+    restart: always
+    ports:
+      - "8000:8000"
+  sensor-climate:
+    image: python3.11.6-slim-bullseye_iot_smart_home:latest
+    hostname: sensor-climate
+    command: python -m iot_smart_home.devices.http.sensors.climate
+    env_file:
+      - .env
+    environment:
+      IOT_SMART_HOME_HTTP_HOST: 0.0.0.0
+      IOT_SMART_HOME_HTTP_PORT: 8001
+      IOT_SMART_HOME_HTTP_CONTROLLER_HOST: controller
+    restart: always
+    depends_on:
+      - controller
+  sensor-lamp:
+    image: python3.11.6-slim-bullseye_iot_smart_home:latest
+    hostname: sensor-lamp
+    command: python -m iot_smart_home.devices.http.sensors.lamp
+    env_file:
+      - .env
+    environment:
+      IOT_SMART_HOME_HTTP_HOST: 0.0.0.0
+      IOT_SMART_HOME_HTTP_PORT: 8002
+      IOT_SMART_HOME_HTTP_CONTROLLER_HOST: controller
+    restart: always
+    depends_on:
+      - controller
+  sensor-motion:
+    image: python3.11.6-slim-bullseye_iot_smart_home:latest
+    hostname: sensor-motion
+    command: python -m iot_smart_home.devices.http.sensors.motion
+    env_file:
+      - .env
+    environment:
+      IOT_SMART_HOME_HTTP_HOST: 0.0.0.0
+      IOT_SMART_HOME_HTTP_PORT: 8003
+      IOT_SMART_HOME_HTTP_CONTROLLER_HOST: controller
+    restart: always
+    depends_on:
+      - controller

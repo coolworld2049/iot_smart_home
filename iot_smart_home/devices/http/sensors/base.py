@@ -1,3 +1,4 @@
+import platform
 import threading
 import time
 from typing import Type
@@ -11,7 +12,7 @@ from pydantic import BaseModel
 from iot_smart_home.core.schemas import HttpDevice, DeviceState
 from iot_smart_home.devices.http.settings import settings
 
-device = HttpDevice(url=f"http://{settings.host}:{settings.port}")
+device = HttpDevice(url=f"http://{platform.node()}:{settings.port}")
 
 app = FastAPI()
 device.state = DeviceState.on
@@ -39,8 +40,10 @@ def send_http_requests(device: HttpDevice, attributes_class: Type[BaseModel]):
 
 
 def run(attributes_class: Type[BaseModel]):
+    time.sleep(2)
     http_request_thread = threading.Thread(
         target=send_http_requests,
+        name=send_http_requests.__name__,
         kwargs={"device": device, "attributes_class": attributes_class},
     )
     http_request_thread.start()

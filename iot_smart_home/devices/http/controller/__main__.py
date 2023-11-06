@@ -5,7 +5,7 @@ from iot_smart_home.devices.http.settings import settings
 
 def main() -> None:
     uvicorn.run(
-        "web.application:get_app",
+        "iot_smart_home.devices.http.controller.web.application:get_app",
         workers=settings.workers_count,
         host=settings.controller_host,
         port=settings.controller_port,

@@ -1,4 +1,3 @@
-import platform
 import random
 
 from dotenv import load_dotenv
@@ -8,7 +7,6 @@ load_dotenv()
 
 
 class Settings(BaseSettings):
-    device_name: str = platform.node()
     host: str = "127.0.0.1"
     port: int = 8000 + random.randint(10, 99)
     controller_host: str = "127.0.0.1"
