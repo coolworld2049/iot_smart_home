@@ -1,9 +1,5 @@
 version: '3.9'
 
-networks:
-  default:
-    driver: bridge
-
 services:
   emqx1:
     image: emqx:5.1.6
@@ -60,8 +56,6 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/climate
     restart: always
-    networks:
-      - default
   sensor-lamp:
     build: .
     hostname: sensor-lamp
@@ -72,8 +66,6 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/lamp
     restart: always
-    networks:
-      - default
   sensor-motion:
     build: .
     hostname: sensor-motion
@@ -84,23 +76,6 @@ services:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
     restart: always
-    networks:
-      - default
-  gateway:
-    build: .
-    hostname: gateway
-    command: python -m iot_smart_home.devices.mqtt.gateway
-    env_file:
-      - .env
-    environment:
-      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
-    restart: always
-    depends_on:
-      - sensor-climate
-      - sensor-lamp
-      - sensor-motion
-    networks:
-      - default
   controller:
     build: .
     hostname: controller
@@ -110,28 +85,22 @@ services:
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
     restart: always
-    depends_on:
-      - gateway
     ports:
       - "5000:5000"
-    networks:
-      - default
-  homeassistant:
-    container_name: homeassistant
-    image: ghcr.io/home-assistant/home-assistant:stable
-    restart: unless-stopped
-    environment:
-      - TZ=Europe/Moscow
-    volumes:
-      - ./homeassistant/config:/config
-      - /etc/localtime:/etc/localtime:ro
-    privileged: true
-    ports:
-      - "8123:8123"
-    depends_on:
-      - emqx2
-    networks:
-      - default
+#  homeassistant:
+#    container_name: homeassistant
+#    image: ghcr.io/home-assistant/home-assistant:stable
+#    restart: unless-stopped
+#    environment:
+#      - TZ=Europe/Moscow
+#    volumes:
+#      - ./homeassistant/config:/config
+#      - /etc/localtime:/etc/localtime:ro
+#    privileged: true
+#    ports:
+#      - "8123:8123"
+#    depends_on:
+#      - emqx2
 volumes:
   emqx1_data:
   emqx2_data:
