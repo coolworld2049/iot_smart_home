@@ -9,18 +9,22 @@ from fastapi import FastAPI
 from loguru import logger
 from pydantic import BaseModel
 
+from iot_smart_home.core._logging import configure_logging
 from iot_smart_home.core.schemas import HttpDevice, DeviceState
 from iot_smart_home.devices.http.settings import settings
 
+configure_logging()
+
 device = HttpDevice(url=f"http://{platform.node()}:{settings.port}")
+device.state = DeviceState.on
 
 app = FastAPI()
-device.state = DeviceState.on
 
 
 @app.get("/state/{state}")
 def device_state(state: str):
     device.state = DeviceState(state)
+    logger.info(f"Device {device.name}: switch state to {device.state}")
     return device
 
 

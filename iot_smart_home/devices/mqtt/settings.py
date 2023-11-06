@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     broker_username: str | None = None
     broker_password: str | None = None
 
-    pub_frequency: float = 1
+    pub_frequency: float = 2
     sensor_topic: str = "sensors"
     controller_topic: str = "controller"
 

@@ -68,8 +68,10 @@ def switch_device_state():
     state = request.args.get("state")
     if not devices.get(name):
         return jsonify(dict(message=f"Device {name} not found"))
-    payload = encryptor.encrypt_payload(state.encode())
+    payload = state.encode()
+    payload = encryptor.encrypt_payload(payload)
     topic = f"{devices.get(name).topic}/state"
+    logger.info(f"Device {name}: switch state to {state}")
     mqtt.publish(topic, payload=payload)
     return redirect("/")
 

@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     workers_count: int = 1
     reload: bool = False
     log_level: str = "INFO"
-    send_frequency: float = 1
+    send_frequency: float = 2
 
     model_config = SettingsConfigDict(
         env_prefix="IOT_SMART_HOME_HTTP_",

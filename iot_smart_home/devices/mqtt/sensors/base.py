@@ -4,9 +4,8 @@ from abc import abstractmethod
 from loguru import logger
 from paho.mqtt.client import Client, MQTTMessage
 
-from iot_smart_home.core._logging import configure_logging
-from iot_smart_home.devices.mqtt.base import MqttSecureDeviceBase
 from iot_smart_home.core.schemas import DeviceState, MqttDevice
+from iot_smart_home.devices.mqtt.base import MqttSecureDeviceBase
 
 
 class MqttSensorBase(MqttSecureDeviceBase):
@@ -35,7 +34,8 @@ class MqttSensorBase(MqttSecureDeviceBase):
         logger.info(f"Subscribed to topic: {self.state_topic}")
 
     def on_message(self, client: Client, userdata, msg: MQTTMessage):
-        msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
+        if hasattr(self, "payload_encryptor"):
+            msg.payload = self.payload_encryptor.decrypt_payload(msg.payload)
         logger.info(f"Received from topic '{msg.topic}' message {msg.payload}")
         if msg.payload and msg.topic == self.state_topic:
             self.device.state = msg.payload.decode()
@@ -53,5 +53,6 @@ class MqttSensorBase(MqttSecureDeviceBase):
 
     def publish(self, client: Client, payload: str):
         logger.info(f"Publish to topic: '{self.mqtt_topic}' payload {payload}")
-        payload = self.payload_encryptor.encrypt_payload(payload.encode())
+        if hasattr(self, "payload_encryptor"):
+            payload = self.payload_encryptor.encrypt_payload(payload.encode())
         client.publish(self.mqtt_topic, payload)
