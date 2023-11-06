@@ -3,7 +3,7 @@ FROM python:3.11.6-slim-bullseye as iot_smart_home
 RUN pip install poetry==1.4.2
 
 RUN apt-get update && \
-    apt-get install -y tcpdump && \
+    apt-get install -y tcpdump ffmpeg libavcodec-extra && \
     apt-get clean
 
 WORKDIR /app

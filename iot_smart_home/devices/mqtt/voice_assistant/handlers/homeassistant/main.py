@@ -8,8 +8,6 @@ from aiogram.fsm.context import FSMContext
 from loguru import logger
 
 from iot_smart_home.devices.mqtt.voice_assistant.handlers.utils import (
-    process_handler_error,
-    del_prev_message,
     convert_to_wav,
     match_speech_with_cmd,
     text_to_wav,
@@ -30,9 +28,7 @@ commands = {
 
 @router.message(F.voice)
 @router.message(F.text)
-@process_handler_error
 async def hass_voice_control(message: types.Message, state: FSMContext):
-    await del_prev_message(message)
     wav_audio_path = None
     if message.voice:
         file = await message.bot.get_file(message.voice.file_id)
@@ -65,10 +61,12 @@ async def hass_voice_control(message: types.Message, state: FSMContext):
                 commands=commands,
                 voice_text=voice_text,
             )
-            if cmd:
-                logger.info(f"Pub to topic {commands[cmd]}")
-                mqtt.publish(commands[cmd][0], commands[cmd][1])
-            await message.answer("Action executed successfully!")
+            if not cmd:
+                raise sr.UnknownValueError()
+            msg = f"Pub to topic {commands[cmd][0]} payload {commands[cmd][1]}"
+            logger.info(msg)
+            await message.answer(msg)
+            mqtt.publish(commands[cmd][0], commands[cmd][1])
         except sr.UnknownValueError:
             await message.answer("Sorry, I couldn't understand the voice message.")
         except sr.RequestError:

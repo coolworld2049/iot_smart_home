@@ -25,7 +25,6 @@ flask = "^3.0.0"
 requests = "^2.31.0"
 python-multipart = "^0.0.6"
 typing-extensions = "4.7.1"
-ffmpeg = "^1.4"
 gtts = "^2.4.0"
 
 
