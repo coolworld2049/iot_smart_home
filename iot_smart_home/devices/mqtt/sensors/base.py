@@ -5,10 +5,10 @@ from loguru import logger
 from paho.mqtt.client import Client, MQTTMessage
 
 from iot_smart_home.core.schemas import DeviceState, MqttDevice
-from iot_smart_home.devices.mqtt.base import MqttSecureDeviceBase
+from iot_smart_home.devices.mqtt.base import MqttDeviceBase
 
 
-class MqttSensorBase(MqttSecureDeviceBase):
+class MqttSensorBase(MqttDeviceBase):
     STATE_TOPIC_SUFFIX = "/state"
 
     def __init__(
