@@ -1,6 +1,51 @@
 version: '3.9'
 
 services:
+  emqx1:
+    image: emqx:5.1.6
+    container_name: emqx1
+    environment:
+      - EMQX_NODE_NAME=emqx@node1.emqx.io
+      - EMQX_CLUSTER__DISCOVERY_STRATEGY=static
+      - EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]
+    healthcheck:
+      test: [ "CMD", "/opt/emqx/bin/emqx", "ctl", "status" ]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      default:
+        aliases:
+          - node1.emqx.io
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "8084:8084"
+      - "8883:8883"
+      - "18083:18083"
+    volumes:
+      - emqx1_data:/opt/emqx/data
+  emqx2:
+    image: emqx:5.1.6
+    container_name: emqx2
+    environment:
+      - EMQX_NODE_NAME=emqx@node2.emqx.io
+      - EMQX_CLUSTER__DISCOVERY_STRATEGY=static
+      - EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io,emqx@node2.emqx.io]
+    healthcheck:
+      test: [ "CMD", "/opt/emqx/bin/emqx", "ctl", "status" ]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      default:
+        aliases:
+          - node2.emqx.io
+    volumes:
+      - emqx2_data:/opt/emqx/data
+    depends_on:
+      emqx1:
+        condition: service_healthy
   sensor-climate:
     image: python3.11.6-slim-bullseye_iot_smart_home:latest
     hostname: sensor-climate
@@ -42,3 +87,6 @@ services:
     restart: always
     ports:
       - "5000:5000"
+volumes:
+  emqx1_data:
+  emqx2_data:
