@@ -4,20 +4,31 @@ version = "0.1.0"
 description = ""
 authors = ["coolworld2049 <coolworld2049@gmail.com>"]
 readme = "README.md"
-packages = [{include = "iot_smart_home"}]
+packages = []
 
 [tool.poetry.dependencies]
 python = "^3.11"
-cryptography = "^41.0.5"
 paho-mqtt = "^1.6.1"
 pydantic = "^2.4.2"
 pydantic-settings = "^2.0.3"
-fastapi = "^0.104.1"
 loguru = "^0.7.2"
+uptime = "^3.0.1"
+pycryptodome = "^3.19.0"
+uvicorn = "^0.24.0"
+jinja2 = "^3.1.2"
+yarl = "^1.9.2"
+ujson = "^5.8.0"
+httptools = "^0.6.1"
+fastapi = "^0.104.1"
+flask-mqtt = "^1.1.1"
+flask = "^3.0.0"
+requests = "^2.31.0"
+python-multipart = "^0.0.6"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.1"
+
 
 [build-system]
 requires = ["poetry-core"]
