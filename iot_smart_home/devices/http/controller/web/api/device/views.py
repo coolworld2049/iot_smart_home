@@ -1,5 +1,6 @@
 import requests
 from fastapi import APIRouter, Form
+from loguru import logger
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
@@ -15,6 +16,7 @@ def get_devices(request: Request) -> dict[str, HttpDevice]:
 
 @router.post("/")
 def add_device(request: Request, device: HttpDevice) -> HttpDevice:
+    logger.info(device)
     state_devices: dict = request.app.state.devices
     state_devices.update({device.name: device})
     return state_devices[device.name]
@@ -28,4 +30,5 @@ def switch_device_state(
     device = state_devices[name]
     resp = requests.get(f"{device.url}/state/{state}")
     resp.raise_for_status()
+    logger.info(f"Device {device.name}: switch state {device.state} to {state}")
     return RedirectResponse("/", status_code=302)
