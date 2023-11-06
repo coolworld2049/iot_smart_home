@@ -37,13 +37,14 @@ mqtt:
       unique_id: "climate_air_pressure"
       icon: mdi:gauge
   - switch:
-      name: "Climate Sensor"
+      name: "Climate"
       state_topic: "sensors/climate/state"
       command_topic: "sensors/climate/state"
       payload_on: "on"
       payload_off: "off"
       state_on: "on"
       state_off: "off"
+      unique_id: "climate_switch"
 
   ### Smart Lamp
   - sensor:
@@ -79,13 +80,14 @@ mqtt:
       unique_id: "lamp_mode"
       icon: mdi:puzzle
   - switch:
-      name: "Smart Lamp"
+      name: "Lamp"
       state_topic: "sensors/lamp/state"
       command_topic: "sensors/lamp/state"
       payload_on: "on"
       payload_off: "off"
       state_on: "on"
       state_off: "off"
+      unique_id: "lamp_switch"
 
   ### Motion Sensor
   - sensor:
@@ -128,10 +130,11 @@ mqtt:
       unique_id: "detection_angle"
       icon: mdi:compass
   - switch:
-      name: "Motion Detector"
+      name: "Motion"
       state_topic: "sensors/motion/state"
       command_topic: "sensors/motion/state"
       payload_on: "on"
       payload_off: "off"
       state_on: "on"
       state_off: "off"
+      unique_id: "motion_switch"
