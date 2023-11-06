@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     controller_topic: str = "controller"
 
     shared_aes_key: str
+    telegram_bot_token: str | None
 
     model_config = SettingsConfigDict(
         env_prefix="IOT_SMART_HOME_MQTT_",

@@ -75,6 +75,16 @@ services:
     environment:
       IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
       IOT_SMART_HOME_MQTT_SENSOR_TOPIC: sensors/motion
+    restart: always
+  mqtt-voice-assistant:
+    image: python3.11.6-slim-bullseye_iot_smart_home:latest
+    hostname: mqtt-sensor-motion
+    command: python -m iot_smart_home.devices.mqtt.voice_assistant
+    env_file:
+      - .env
+    environment:
+      IOT_SMART_HOME_MQTT_BROKER_HOST: node1.emqx.io
+    restart: always
 volumes:
   emqx1_data:
   emqx2_data:
