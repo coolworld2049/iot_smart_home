@@ -8,7 +8,7 @@ from iot_smart_home.devices.mqtt.sensors.base import MqttSensorBase
 from iot_smart_home.devices.mqtt.settings import settings
 
 
-class ClimateSensorResponse(BaseModel):
+class ClimateSensorAttributes(BaseModel):
     temperature_celsius: float = Field(
         default_factory=lambda: round(random.uniform(10.0, 35.0), 1)
     )
@@ -34,7 +34,7 @@ class ClimateSensor(MqttSensorBase):
         )
 
     def measure(self, client: Client):
-        self.device.attributes = ClimateSensorResponse()
+        self.device.attributes = ClimateSensorAttributes()
         return self.device
 
 

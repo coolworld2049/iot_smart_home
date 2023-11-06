@@ -2,6 +2,7 @@ from importlib import metadata
 
 from fastapi import FastAPI
 from fastapi.responses import UJSONResponse
+from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
@@ -20,9 +21,10 @@ def get_app() -> FastAPI:
         version=metadata.version("controller"),
         docs_url="/api/docs",
         redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json",
+        openurl="/api/openapi.json",
         default_response_class=UJSONResponse,
     )
+
     templates = Jinja2Templates(directory="templates")
 
     register_startup_event(app)
@@ -37,7 +39,7 @@ def get_app() -> FastAPI:
             {
                 "request": request,
                 "devices": request.app.state.devices,
-                "reload_every_ms": 4 * 1000,
+                "reload_every_ms": 2 * 1000,
             },
         )
 

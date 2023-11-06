@@ -12,10 +12,19 @@ class DeviceState(str, Enum):
     off: str = "off"
 
 
-class Device(BaseModel):
+class DeviceBase(BaseModel):
     name: str = platform.node()
-    topic: str | None = None
     state: DeviceState | None = None
     attributes: Any | None = None
-    uptime: float = Field(default_factory=lambda: uptime())
-    last_changed: str = Field(default_factory=lambda: datetime.utcnow().__str__())
+    uptime: float | None = Field(default_factory=lambda: uptime())
+    last_changed: str | None = Field(
+        default_factory=lambda: datetime.utcnow().__str__()
+    )
+
+
+class MqttDevice(DeviceBase):
+    topic: str | None = None
+
+
+class HttpDevice(DeviceBase):
+    url: str

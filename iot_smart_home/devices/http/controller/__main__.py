@@ -1,16 +1,16 @@
 import uvicorn
 
-from iot_smart_home.devices.http.controller.settings import controller_settings
+from iot_smart_home.devices.http.settings import settings
 
 
 def main() -> None:
     uvicorn.run(
         "web.application:get_app",
-        workers=controller_settings.workers_count,
-        host=controller_settings.host,
-        port=controller_settings.port,
-        reload=controller_settings.reload,
-        log_level=controller_settings.log_level.lower(),
+        workers=settings.workers_count,
+        host=settings.controller_host,
+        port=settings.controller_port,
+        reload=settings.reload,
+        log_level=settings.log_level.lower(),
         factory=True,
     )
 

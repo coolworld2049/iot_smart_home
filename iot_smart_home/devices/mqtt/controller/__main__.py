@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, render_template, redirect
 from flask_mqtt import Mqtt
 from loguru import logger
 
-from iot_smart_home.core.schemas import Device
+from iot_smart_home.core.schemas import MqttDevice
 from iot_smart_home.devices.mqtt.securiy.crypt import PayloadEncryptor
 from iot_smart_home.devices.mqtt.settings import settings
 
@@ -21,14 +21,14 @@ app.config["MQTT_PASSWORD"] = settings.broker_password
 app.config["MQTT_KEEPALIVE"] = 5
 
 mqtt = Mqtt(app, connect_async=True)
-devices: dict[str, Device | None] = {}
+devices: dict[str, MqttDevice | None] = {}
 encryptor = PayloadEncryptor(settings.shared_aes_key)
 
 
 def update_devices(message):
     try:
         msg_payload = json.loads(message.payload.decode())
-        device = Device(**msg_payload)
+        device = MqttDevice(**msg_payload)
         devices.update({device.name: device})
     except:
         pass

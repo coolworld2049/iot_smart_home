@@ -1,10 +1,8 @@
 import random
 
-from paho.mqtt.client import Client
 from pydantic import BaseModel, Field
 
-from iot_smart_home.devices.mqtt.sensors.base import MqttSensorBase
-from iot_smart_home.devices.mqtt.settings import settings
+from iot_smart_home.devices.http.sensors.base import run
 
 
 class MotionSensorAttributes(BaseModel):
@@ -26,28 +24,5 @@ class MotionSensorAttributes(BaseModel):
     )
 
 
-class MotionSensor(MqttSensorBase):
-    def __init__(self, broker_host, broker_port, mqtt_topic):
-        super().__init__(
-            broker_host,
-            broker_port,
-            mqtt_topic,
-            pub_frequency=settings.pub_frequency,
-        )
-
-    def measure(self, client: Client):
-        self.device.attributes = MotionSensorAttributes()
-        return self.device
-
-
-def main():
-    motion = MotionSensor(
-        broker_host=settings.broker_host,
-        broker_port=settings.broker_port,
-        mqtt_topic=settings.sensor_topic,
-    )
-    motion.run()
-
-
 if __name__ == "__main__":
-    main()
+    run(attributes_class=MotionSensorAttributes)

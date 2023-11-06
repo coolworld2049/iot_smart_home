@@ -12,7 +12,6 @@
       <list>
         <option value="$MODULE_DIR$/iot_smart_home/devices" />
         <option value="$MODULE_DIR$/iot_smart_home/devices/mqtt/sensors" />
-        <option value="$MODULE_DIR$/iot_smart_home/devices/http/controller/services" />
         <option value="$MODULE_DIR$/iot_smart_home/devices/http/controller/web" />
         <option value="$MODULE_DIR$/iot_smart_home/devices/http/controller" />
         <option value="$MODULE_DIR$/iot_smart_home/core" />

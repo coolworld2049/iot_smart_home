@@ -7,7 +7,7 @@ from iot_smart_home.devices.mqtt.sensors.base import MqttSensorBase
 from iot_smart_home.devices.mqtt.settings import settings
 
 
-class LampSensorResponse(BaseModel):
+class LampSensorAttributes(BaseModel):
     is_on: bool = Field(default_factory=lambda: random.choice([True, False]))
     brightness: int = Field(default_factory=lambda: random.randint(1, 100))
     color_temperature: int = Field(default_factory=lambda: random.randint(2700, 6500))
@@ -29,7 +29,7 @@ class LampSensor(MqttSensorBase):
         )
 
     def measure(self, client: Client):
-        self.device.attributes = LampSensorResponse()
+        self.device.attributes = LampSensorAttributes()
         return self.device
 
 

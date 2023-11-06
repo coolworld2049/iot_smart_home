@@ -51,7 +51,7 @@
 <table>
   <tr>
     <th>Name</th>
-    <th>Topic</th>
+    <th>Url</th>
     <th>State</th>
     <th>Attributes</th>
     <th>Uptime</th>
@@ -62,8 +62,12 @@
   {% for name, device in devices.items() %}
   <tr>
     <td>{{ device.name }}</td>
-    <td>{{ device.topic }}</td>
+    <td>{{ device.url }}</td>
+    {% if device.state is not none %}
     <td>{{ device.state.value.upper() }}</td>
+    {% else %}
+    <td>N/A</td>
+    {% endif %}
     <td>
       {% if device.attributes is not none %}
       {% for k, v in device.attributes.items() %}
@@ -76,14 +80,10 @@
     <td>{{ device.uptime }}</td>
     <td>{{ device.last_changed }}</td>
     <td>
-      <form action="/switch_device_state">
-        <input type="hidden" name="name" value="{{ name }}">
+      <form action="api/devices/state" method="post">
+        <input type="hidden" name="name" value="{{ device.name }}">
         <input type="submit" name="state" value="on">
         <input type="submit" name="state" value="off">
-      </form>
-      <form action="/delete_device"> <!-- Added a form for deleting device -->
-        <input type="hidden" name="name" value="{{ name }}">
-        <input type="submit" name="delete" value="❌">
       </form>
     </td>
   </tr>

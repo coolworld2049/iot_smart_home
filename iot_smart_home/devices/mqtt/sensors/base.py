@@ -6,7 +6,7 @@ from paho.mqtt.client import Client, MQTTMessage
 
 from iot_smart_home.core._logging import configure_logging
 from iot_smart_home.devices.mqtt.base import MqttSecureDeviceBase
-from iot_smart_home.core.schemas import DeviceState, Device
+from iot_smart_home.core.schemas import DeviceState, MqttDevice
 
 
 class MqttSensorBase(MqttSecureDeviceBase):
@@ -23,10 +23,10 @@ class MqttSensorBase(MqttSecureDeviceBase):
         self.mqtt_topic = mqtt_topic
         self.state_topic = mqtt_topic + self.STATE_TOPIC_SUFFIX
         self.pub_frequency = pub_frequency
-        self.device = Device(state=DeviceState.on, topic=self.mqtt_topic)
+        self.device = MqttDevice(state=DeviceState.on, topic=self.mqtt_topic)
 
     @abstractmethod
-    def measure(self, client: Client) -> Device:
+    def measure(self, client: Client) -> MqttDevice:
         """Measure and return the device state."""
         pass
 
@@ -47,7 +47,7 @@ class MqttSensorBase(MqttSecureDeviceBase):
             obj = self.measure(client)
             if self.device.state == DeviceState.off:
                 obj.attributes = None
-            self.device = Device(state=self.device.state, topic=self.mqtt_topic)
+            self.device = MqttDevice(state=self.device.state, topic=self.mqtt_topic)
             self.publish(client, obj.model_dump_json())
             time.sleep(self.pub_frequency)
 
